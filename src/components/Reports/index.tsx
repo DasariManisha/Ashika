@@ -1,13 +1,8 @@
 import TanStackTable from "@/components/core/Table/TanstackTable";
 import { getAllPaginatedReports } from "@/utils/services/reports";
-import {
-  useMutation,
-  usePrefetchQuery,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PaginationState, createColumnHelper } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ResponseDataType, testColumns } from "./testColumns";
 import Loading from "../core/Loading";
 import { Button } from "../ui/button";
@@ -38,8 +33,11 @@ const Reports: React.FC<ReportProps> = ({
     pageIndex: pageIndexParam,
     pageSize: pageSizeParam,
   });
-  const { mutate, isError, error, data, isPending } = useMutation({
-    mutationFn: async () => {
+  const [del, setDel] = useState(1);
+
+  const { isLoading, isError, error, data, isFetching } = useQuery({
+    queryKey: ["projects", pagination, del],
+    queryFn: async () => {
       const response = await getAllPaginatedReports({
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
@@ -47,12 +45,10 @@ const Reports: React.FC<ReportProps> = ({
         asset_type,
         asset_category,
       });
-
       const queryParams = {
-        current_page: pagination.pageIndex,
-        page_size: pagination.pageSize,
+        current_page: +pagination.pageIndex,
+        page_size: +pagination.pageSize,
       };
-
       router.navigate({
         to: `/${asset_group}/${asset_type}`,
         search: queryParams,
@@ -60,26 +56,12 @@ const Reports: React.FC<ReportProps> = ({
 
       return response;
     },
-    onError: (err) => {
-      console.error("Error fetching reports:", err);
-    },
-    onSuccess: (data) => {
-      console.log("Fetched reports:", data);
-    },
+    // staleTime: 5000,
   });
-
-  // mutate();
-
-  // usePrefetchQuery({
-  //   queryKey: ["articles"],
-  //   queryFn: (...args) => {
-  //     return getArticles(...args);
-  //   },
-  // });
 
   const getAllReports = async ({ pageIndex, pageSize }: any) => {
     setPagination({ pageIndex, pageSize });
-    mutate();
+    // queryClient.invalidateQueries(["projects", { pageIndex, pageSize }]);
   };
 
   const paginationInfo = data?.data?.data?.pagination_info;
@@ -115,11 +97,13 @@ const Reports: React.FC<ReportProps> = ({
                     asset_type,
                     asset_category,
                   })
+
                 // getAllReports({
                 //   pageIndex: pagination.pageIndex,
                 //   pageSize: pagination.pageSize,
                 // })
               }
+              setDel={setDel}
             />
           </div>
         );
@@ -151,7 +135,7 @@ const Reports: React.FC<ReportProps> = ({
             />
           </div>
         )}
-        <Loading loading={isPending} />
+        <Loading loading={isLoading || isFetching} />
       </div>
     </div>
   );

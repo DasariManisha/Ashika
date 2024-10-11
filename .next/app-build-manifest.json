@@ -1,0 +1,26 @@
+{
+  "pages": {
+    "/research-reports/monthly-insights-reports/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/research-reports/monthly-insights-reports/page.css",
+      "static/chunks/app/research-reports/monthly-insights-reports/page.js"
+    ],
+    "/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/layout.css",
+      "static/chunks/app/layout.js"
+    ],
+    "/research-reports/monthly-insights-reports/add/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/research-reports/monthly-insights-reports/add/page.js"
+    ],
+    "/_not-found/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/_not-found/page.js"
+    ]
+  }
+}
