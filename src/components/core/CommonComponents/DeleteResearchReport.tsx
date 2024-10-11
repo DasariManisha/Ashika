@@ -34,9 +34,7 @@ const DeleteResearchReports = ({
         const response = await deleteReportAPI(id);
         if (response?.status === 200 || response?.status === 201) {
           toast.success(response?.data?.message);
-          // getAllReports({});
           setDel((prev) => prev + 1);
-          // queryClient.invalidateQueries(["projects"]);
           setDeleteDialogOpen(false);
         } else {
           toast.error(response?.data?.message);

@@ -15,12 +15,17 @@ const useUploadFileHook = ({ accept, setFileKey,type }: fileUploadProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
 
-  
+  const context: CreateReportContextProps = useContext(
+    CreateReportContext
+  ) as CreateReportContextProps;
+
+  const { setLoading } = context;
 
 
   const uploadFile = async (fileDetails: any, file: File) => {
     setUploadSuccess(false);
     setStartUploading(true);
+    setLoading(true);
     try {
       const payload = {
         file_name: fileDetails.fileName,
@@ -53,7 +58,7 @@ const useUploadFileHook = ({ accept, setFileKey,type }: fileUploadProps) => {
       console.log(error);
     } finally {
       setStartUploading(false);
-
+      setLoading(false);
     }
   };
 

@@ -30,7 +30,8 @@ import React, {
     addReport: ({ asset_group, asset_type, asset_category }: ReportDetailsProps) => void;
     errMessages: any;
     categories : Array<string>;
-    setCategories: Dispatch<SetStateAction<string[]>>
+    setCategories: Dispatch<SetStateAction<string[]>>;
+    isPending: boolean;
 
   }
 
