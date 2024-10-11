@@ -52,8 +52,9 @@ const Reports: React.FC<ReportProps> = ({
       });
       return response;
     },
-    staleTime: 5000,
+    // staleTime: 5000,
   });
+
   const getAllReports = async ({ pageIndex, pageSize }: any) => {
     setPagination({ pageIndex, pageSize });
     // queryClient.invalidateQueries(["projects", { pageIndex, pageSize }]);
@@ -89,6 +90,7 @@ const Reports: React.FC<ReportProps> = ({
                     asset_type,
                     asset_category,
                   })
+
                 // getAllReports({
                 //   pageIndex: pagination.pageIndex,
                 //   pageSize: pagination.pageSize,

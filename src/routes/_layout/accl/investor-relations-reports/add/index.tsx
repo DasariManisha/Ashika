@@ -2,7 +2,7 @@ import CombineAdd from "@/components/core/AddReports/CombineAdd";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute(
-  "/_layout/accl/investor-relation-documents/add/"
+  "/_layout/accl/investor-relations-reports/add/"
 )({
   component: () => (
     <CombineAdd

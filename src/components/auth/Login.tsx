@@ -3,7 +3,7 @@ import LogoPath from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LogIn } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { loginAPI } from "@/utils/services/auth";
@@ -22,21 +22,19 @@ const LoginComponent = () => {
   const [loginDetails, setLoginDetails] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const [errors, setErrors] = useState([]);
+  const [errors, setErrors] = useState<string[]>([]);
   const navigate = useNavigate({ from: "/" });
 
-  const { mutate, isPending, isError, error, data, isSuccess } = useMutation({
+  const { mutate, isError, error } = useMutation({
     mutationFn: async (loginDetails: loginProps) => {
       return await loginAPI(loginDetails);
     },
     onSuccess: (response: any) => {
-      console.log(response, "res");
+      setLoading(false);
       const { data } = response?.data;
       const { access_token } = data;
-      // const details: any = jwt.decode(access_token);
       const exp = new Date().getTime() + 10000;
 
-      // Store the token in cookies
       Cookies.set("token", access_token, {
         priority: "High",
         expires: exp,
@@ -49,19 +47,21 @@ const LoginComponent = () => {
       });
     },
     onError: (error: any) => {
+      setLoading(false);
       if (error?.response?.status === 422) {
         setErrors(
           error?.response?.data?.errors || ["Invalid login credentials."]
         );
       } else {
+        toast.error("Login failed. Please try again.");
       }
     },
   });
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     setErrors([]);
+    setLoading(true); // Start loading when login is submitted
     mutate(loginDetails);
   };
 
@@ -78,7 +78,8 @@ const LoginComponent = () => {
       <div className="w-full h-full flex flex-col justify-center items-center space-y-8 relative ml-[-20px] bg-white shadow-xl p-8">
         <div>
           <img
-            src={LogoPath}
+            // src={LogoPath}
+            src={"/img/Ashika-logo.svg"}
             alt="logo"
             className="w-[200px] mx-auto animate-in zoom-in-0 duration-1000"
           />
@@ -120,14 +121,21 @@ const LoginComponent = () => {
           <div className="self-end font-light text-md text-red-500 underline cursor-pointer">
             Forgot Password?
           </div>
-          <Button type="submit" className="btn-primary w-full text-xl">
-            Login <LogIn strokeWidth={1} className="ml-2" />
+          <Button
+            type="submit"
+            className="w-full flex justify-center items-center"
+          >
+            {loading ? (
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            ) : (
+              "Log In"
+            )}
           </Button>
         </form>
-        {/* <p className="font-light self-center md:text-xl lg:text-3xl xl:text-base">Don't have an account? <span className="text-yellow-500 cursor-pointer">Register</span></p> */}
       </div>
       <Loading loading={loading} />
     </div>
   );
 };
+
 export default LoginComponent;
