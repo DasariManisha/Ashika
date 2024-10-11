@@ -23,7 +23,7 @@ const data = {
   date: "",
   file_key: "",
   thumbnail_key: "",
-  category: "",
+  asset_category: "",
 };
 
 interface ReportPayload {
@@ -58,6 +58,8 @@ export const CreateReportContext = createContext<CreateReportContextProps>({
   handleMonthChange: () => {},
   addReport: () => {},
   errMessages: {},
+  categories: [],
+  setCategories: () => [],
 });
 
 export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
@@ -69,7 +71,7 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
     date: "",
     file_key: "",
     thumbnail_key: "",
-    category: "",
+    asset_category: "",
   });
   const [fileKey, setFileKey] = useState("");
   const [thumbnailKey, setThumbnailKey] = useState("");
@@ -78,6 +80,7 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [errMessages, setErrorMessages] = useState<any>({});
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState<string[]>([]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -90,7 +93,7 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
   const handleCategory = (category: string) => {
     setReportsData((prevData: any) => ({
       ...prevData,
-      category: category,
+      asset_category: category,
     }));
   };
 
@@ -119,12 +122,10 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
       return await addReportsAPI(payload);
     },
     onSuccess: (response: any) => {
-      console.log(response, "res");
       if (response?.status === 200 || response?.status === 201) {
-        toast.error(response?.data?.message);
+        toast.success(response?.data?.message);
       }
       if (response?.status === 422) {
-        console.log(response?.data?.errData, "errDa");
         setErrorMessages(response?.data?.errData || [""]);
         toast.error(response?.data?.message);
       } else {
@@ -132,13 +133,6 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
       // navigate({
       //   to: `/`,
       // });
-    },
-    onError: (error: any) => {
-      if (error?.response?.status === 422) {
-        console.log(error?.response?.data?.errData, "errDa");
-        setErrorMessages(error?.response?.data?.errData || [""]);
-      } else {
-      }
     },
   });
 
@@ -151,7 +145,7 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
       date: "",
       file_key: "",
       thumbnail_key: "",
-      category: "",
+      asset_category: "",
     });
     setFileKey("");
     setThumbnailKey("");
@@ -164,8 +158,6 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
     clearStates();
   }, [router]);
 
-  const formattedDate = dayjs("2024/10/10").toISOString();
-
   const addReport = ({
     asset_group,
     asset_type,
@@ -177,14 +169,14 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
     const payload = {
       asset_group,
       asset_type,
-      asset_category: "Company Report",
+      asset_category: reportsData?.asset_category,
       title: reportsData?.title,
       file_key: fileKey,
       ...(showYear && {
         date: reportsData?.date,
       }),
       ...(showThumbnail && { thumbnail_key: thumbnailKey }),
-      // ...(showCategory && { category: reportsData?.category }),
+      // ...(showCategory && { asset_category: reportsData?.category }),
     };
     mutate(payload);
   };
@@ -212,6 +204,8 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
         handleYearChange,
         addReport,
         errMessages,
+        categories,
+        setCategories,
       }}
     >
       {children}
