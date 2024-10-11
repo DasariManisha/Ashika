@@ -29,7 +29,6 @@ const useUploadFileHook = ({ accept, setFileKey,type }: fileUploadProps) => {
       const response = await fileUploadAPI(payload);
 
       if (response.status === 200 || response.status === 201) {
-        console.log(response, "res")
         const { target_url, file_key } = response?.data?.data;
         setFileKey(file_key);
         await uploadToS3(target_url, file);
@@ -42,11 +41,9 @@ const useUploadFileHook = ({ accept, setFileKey,type }: fileUploadProps) => {
   };
 
   const uploadToS3 = async (url: string, file: File) => {
-    console.log(url, "urlS3");
     try {
       const response = await uploadToS3API(url, file);
       if (response.status === 200 || response.status === 201) {
-        console.log(response);
         toast.success("File Uploaded SuccessFully");
         setUploadSuccess(true);
       } else {
@@ -62,7 +59,6 @@ const useUploadFileHook = ({ accept, setFileKey,type }: fileUploadProps) => {
 
   const handleFileSelect = (e: any) => {
     const file = e.target.files[0];
-    console.log(file, "file");
     if (file) {
       const objectUrl = URL.createObjectURL(file);
       setPreview(objectUrl);
@@ -72,7 +68,6 @@ const useUploadFileHook = ({ accept, setFileKey,type }: fileUploadProps) => {
       fileSize: (file.size / 1024).toFixed(2),
       fileType: file.type,
     }));
-    console.log(files);
     if (type == "import") {
       setFileKey(file);
       setSelectedFiles(files);

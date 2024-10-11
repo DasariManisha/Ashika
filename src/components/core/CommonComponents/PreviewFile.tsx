@@ -15,7 +15,6 @@ const PreviewFile = ({ info }: any) => {
       const response = await filePreviewAPI(payload);
 
       if (response.status === 200 || response.status === 201) {
-        console.log(response, "res");
         const url = response?.data?.data?.download_url;
         window.open(url, "_blank", "noopener,noreferrer");
         // await openFileInNewTab(url);
@@ -44,8 +43,6 @@ const PreviewFile = ({ info }: any) => {
   //       console.error("Error opening file in new tab:", error);
   //     }
   //   };
-
-  console.log(info, "info");
 
   return (
     <>
