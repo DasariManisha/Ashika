@@ -13,7 +13,6 @@ import { toast } from "sonner";
 import Loading from "../core/CommonComponents/Loading";
 import { useNavigate } from "@tanstack/react-router";
 import { errPopper } from "@/utils/helpers/errorPopper";
-
 interface loginProps {
   email: string;
   password: string;
@@ -35,7 +34,7 @@ const LoginComponent = () => {
           const { data } = response?.data;
           const { access_token } = data;
           const expirationDate = new Date();
-          expirationDate.setTime(expirationDate.getTime() + 10000);
+          expirationDate.setTime(expirationDate.getTime() + 30 * 10000);
           Cookies.set("token", access_token, {
             priority: "High",
             expires: expirationDate,
@@ -44,8 +43,7 @@ const LoginComponent = () => {
           navigate({
             to: "/users",
           });
-        }
-        if (response?.status === 422) {
+        } else if (response?.status === 422) {
           const errData = response?.data?.errData;
           setErrors(errData);
         } else {
@@ -57,10 +55,6 @@ const LoginComponent = () => {
       } finally {
         setLoading(false);
       }
-    },
-    onError: (error) => {
-      console.error(error);
-      toast.error("An error occurred while logging in.");
     },
   });
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
