@@ -78,7 +78,8 @@ const LoginComponent = () => {
       <div className="w-full h-full flex flex-col justify-center items-center space-y-8 relative ml-[-20px] bg-white shadow-xl p-8">
         <div>
           <img
-            src={LogoPath}
+            // src={LogoPath}
+            src={"/assets/logo.png"}
             alt="logo"
             className="w-[200px] mx-auto animate-in zoom-in-0 duration-1000"
           />
