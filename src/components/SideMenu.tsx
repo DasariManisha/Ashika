@@ -306,7 +306,7 @@ function SideMenu() {
             </li>
             <li>
               <Link
-                to="/accl/familiarization-programme"
+                to="/accl/familiarization-programme-reports"
                 activeProps={{
                   className: "bg-blue-900 text-white",
                 }}
@@ -314,7 +314,7 @@ function SideMenu() {
               >
                 <div
                   className={`relative flex items-center gap-3 px-2 py-1  text-gray-600 ${
-                    isActive("/accl/familiarization-programme")
+                    isActive("/accl/familiarization-programme-reports")
                       ? "bg-blue-100 rounded "
                       : "hover:bg-blue-100 rounded"
                   }`}
@@ -329,7 +329,7 @@ function SideMenu() {
             </li>
             <li>
               <Link
-                to="/accl/investor-relation-documents"
+                to="/accl/investor-relations-reports"
                 activeProps={{
                   className: "bg-blue-900 text-white",
                 }}
@@ -337,7 +337,7 @@ function SideMenu() {
               >
                 <div
                   className={`relative flex items-center gap-3 px-2 py-1  text-gray-600 ${
-                    isActive("/accl/investor-relation-documents")
+                    isActive("/accl/investor-relations-reports")
                       ? "bg-blue-100 rounded "
                       : "hover:bg-blue-100 rounded"
                   }`}
