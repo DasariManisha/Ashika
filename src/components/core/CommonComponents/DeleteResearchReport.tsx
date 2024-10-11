@@ -1,13 +1,10 @@
 import { Button } from "@/components/ui/button";
 // import { deleteResearchReportsAPI } from "@/lib/services/researchReports";
-import Image from "next/image";
-import { useState } from "react";
-// import { toast } from "sonner";
 import DeleteDialog from "../deleteDialog";
 import { deleteReportAPI } from "@/utils/services/reports";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-
+import React, { Dispatch, SetStateAction, useState } from "react";
 interface deleteProps {
   info: any;
   getAllReports: ({
@@ -17,13 +14,16 @@ interface deleteProps {
     // asset_type,
     // asset_category,
   }: any) => void;
+  setDel: Dispatch<SetStateAction<number>>;
 }
-
-const DeleteResearchReports = ({ info, getAllReports }: deleteProps) => {
+const DeleteResearchReports = ({
+  info,
+  getAllReports,
+  setDel,
+}: deleteProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [reportId, setReportId] = useState(0);
   const queryClient = useQueryClient();
-
   const { mutate, isPending, isError, error, data, isSuccess } = useMutation({
     mutationFn: async (id: number) => {
       try {
@@ -31,7 +31,8 @@ const DeleteResearchReports = ({ info, getAllReports }: deleteProps) => {
         console.log(response, "resDel");
         if (response?.status === 200 || response?.status === 201) {
           toast.success(response?.data?.message);
-          getAllReports({});
+          // getAllReports({});
+          setDel((prev) => prev + 1);
           // queryClient.invalidateQueries(["projects"]);
           setDeleteDialogOpen(false);
         } else {
@@ -42,16 +43,13 @@ const DeleteResearchReports = ({ info, getAllReports }: deleteProps) => {
       }
     },
   });
-
   const handleDeleteClick = () => {
     mutate(reportId);
   };
-
   const handleDelete = (id: number) => {
     setDeleteDialogOpen(true);
     setReportId(id);
   };
-
   return (
     <>
       <Button

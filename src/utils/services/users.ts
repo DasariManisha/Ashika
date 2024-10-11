@@ -25,7 +25,7 @@ export const getAllPaginatedUsers = async ({
 export const addUsersAPI = async (payload: any) => {
     try {
         // return await $fetch.get(`reports?page=${pageIndex}&limit=${pageSize}&report_group=${reportGroup}&report_type=${reportType}&category_type=${categoryType}`)
-        return await $fetch.post("/assets", payload);
+        return await $fetch.post("/users", payload);
     } catch (err) {
         throw err
     }

@@ -1,13 +1,8 @@
 import TanStackTable from "@/components/core/Table/TanstackTable";
 import { getAllPaginatedReports } from "@/utils/services/reports";
-import {
-  useMutation,
-  usePrefetchQuery,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PaginationState, createColumnHelper } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ResponseDataType, testColumns } from "./testColumns";
 import Loading from "../core/Loading";
 import { Button } from "../ui/button";
@@ -15,7 +10,6 @@ import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
 import { addSerial } from "@/lib/helpers/addSerial";
 import PreviewFile from "../core/CommonComponents/PreviewFile";
 import DeleteResearchReports from "../core/CommonComponents/DeleteResearchReport";
-
 interface ReportProps {
   asset_group: string;
   asset_type: string;
@@ -30,7 +24,6 @@ const Reports: React.FC<ReportProps> = ({
   const location = useLocation();
   const router = useRouter();
   const queryClient = useQueryClient();
-
   const searchParams = new URLSearchParams(location.search);
   const pageIndexParam = Number(searchParams.get("current_page")) || 1;
   const pageSizeParam = Number(searchParams.get("page_size")) || 10;
@@ -38,8 +31,10 @@ const Reports: React.FC<ReportProps> = ({
     pageIndex: pageIndexParam,
     pageSize: pageSizeParam,
   });
-  const { mutate, isError, error, data, isPending } = useMutation({
-    mutationFn: async () => {
+  const [del, setDel] = useState(1);
+  const { isLoading, isError, error, data, isFetching } = useQuery({
+    queryKey: ["projects", pagination, del],
+    queryFn: async () => {
       const response = await getAllPaginatedReports({
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
@@ -47,41 +42,22 @@ const Reports: React.FC<ReportProps> = ({
         asset_type,
         asset_category,
       });
-
       const queryParams = {
-        current_page: pagination.pageIndex,
-        page_size: pagination.pageSize,
+        current_page: +pagination.pageIndex,
+        page_size: +pagination.pageSize,
       };
-
       router.navigate({
         to: `/${asset_group}/${asset_type}`,
         search: queryParams,
       });
-
       return response;
     },
-    onError: (err) => {
-      console.error("Error fetching reports:", err);
-    },
-    onSuccess: (data) => {
-      console.log("Fetched reports:", data);
-    },
+    staleTime: 5000,
   });
-
-  // mutate();
-
-  // usePrefetchQuery({
-  //   queryKey: ["articles"],
-  //   queryFn: (...args) => {
-  //     return getArticles(...args);
-  //   },
-  // });
-
   const getAllReports = async ({ pageIndex, pageSize }: any) => {
     setPagination({ pageIndex, pageSize });
-    mutate();
+    // queryClient.invalidateQueries(["projects", { pageIndex, pageSize }]);
   };
-
   const paginationInfo = data?.data?.data?.pagination_info;
   const records = data?.data?.data?.records;
   const recordsWithSerials = addSerial(
@@ -94,9 +70,7 @@ const Reports: React.FC<ReportProps> = ({
       to: `/${asset_group}/${asset_type}/add`,
     });
   };
-
   const columnHelper = createColumnHelper<ResponseDataType>();
-
   const actionsColumns = [
     columnHelper.accessor("actions", {
       header: () => "Actions",
@@ -120,6 +94,7 @@ const Reports: React.FC<ReportProps> = ({
                 //   pageSize: pagination.pageSize,
                 // })
               }
+              setDel={setDel}
             />
           </div>
         );
@@ -127,7 +102,6 @@ const Reports: React.FC<ReportProps> = ({
       footer: (info) => info.column.id,
     }),
   ];
-
   return (
     <div className="relative">
       <div className="flex justify-end mb-4">
@@ -151,10 +125,9 @@ const Reports: React.FC<ReportProps> = ({
             />
           </div>
         )}
-        <Loading loading={isPending} />
+        <Loading loading={isLoading || isFetching} />
       </div>
     </div>
   );
 };
-
 export default Reports;
