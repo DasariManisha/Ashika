@@ -79,7 +79,7 @@ const LoginComponent = () => {
         <div>
           <img
             // src={LogoPath}
-            src={"/assets/logo.png"}
+            src={"/img/Ashika-logo.svg"}
             alt="logo"
             className="w-[200px] mx-auto animate-in zoom-in-0 duration-1000"
           />
