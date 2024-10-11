@@ -28,7 +28,6 @@ const DeleteResearchReports = ({
     mutationFn: async (id: number) => {
       try {
         const response = await deleteReportAPI(id);
-        console.log(response, "resDel");
         if (response?.status === 200 || response?.status === 201) {
           toast.success(response?.data?.message);
           // getAllReports({});
