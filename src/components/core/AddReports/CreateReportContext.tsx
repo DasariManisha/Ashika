@@ -5,7 +5,7 @@ import {
   reportsDataProps,
 } from "@/lib/interfaces/context";
 import { addReportsAPI } from "@/utils/services/reports";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import React, {
   createContext,
   useState,
@@ -17,13 +17,14 @@ import React, {
 import dayjs from "dayjs";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
+import Loading from "../Loading";
 
 const data = {
   title: "",
   date: "",
   file_key: "",
   thumbnail_key: "",
-  category: "",
+  asset_category: "",
 };
 
 interface ReportPayload {
@@ -58,6 +59,9 @@ export const CreateReportContext = createContext<CreateReportContextProps>({
   handleMonthChange: () => {},
   addReport: () => {},
   errMessages: {},
+  categories: [],
+  setCategories: () => [],
+  isPending: false,
 });
 
 export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
@@ -69,15 +73,18 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
     date: "",
     file_key: "",
     thumbnail_key: "",
-    category: "",
+    asset_category: "",
   });
   const [fileKey, setFileKey] = useState("");
+  const [assetGroup, setAssetGroup] = useState("");
+  const [assetType, setAssetType] = useState("");
   const [thumbnailKey, setThumbnailKey] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [errMessages, setErrorMessages] = useState<any>({});
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState<string[]>([]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -90,7 +97,7 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
   const handleCategory = (category: string) => {
     setReportsData((prevData: any) => ({
       ...prevData,
-      category: category,
+      asset_category: category,
     }));
   };
 
@@ -119,30 +126,19 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
       return await addReportsAPI(payload);
     },
     onSuccess: (response: any) => {
-      console.log(response, "res");
       if (response?.status === 200 || response?.status === 201) {
-        toast.error(response?.data?.message);
+        toast.success(response?.data?.message);
+        clearStates();
+        navigate({
+          to: `/${assetGroup}/${assetType}`,
+        });
       }
       if (response?.status === 422) {
-        console.log(response?.data?.errData, "errDa");
         setErrorMessages(response?.data?.errData || [""]);
         toast.error(response?.data?.message);
-      } else {
-      }
-      // navigate({
-      //   to: `/`,
-      // });
-    },
-    onError: (error: any) => {
-      if (error?.response?.status === 422) {
-        console.log(error?.response?.data?.errData, "errDa");
-        setErrorMessages(error?.response?.data?.errData || [""]);
-      } else {
       }
     },
   });
-
-  console.log(error, "err");
 
   const clearStates = () => {
     setErrorMessages({});
@@ -151,20 +147,15 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
       date: "",
       file_key: "",
       thumbnail_key: "",
-      category: "",
+      asset_category: "",
     });
     setFileKey("");
     setThumbnailKey("");
-    // setSelectedCategory("");
-    // setSelectedMonth("");
-    // setSelectedYear("");
   };
 
   useEffect(() => {
     clearStates();
   }, [router]);
-
-  const formattedDate = dayjs("2024/10/10").toISOString();
 
   const addReport = ({
     asset_group,
@@ -174,47 +165,53 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
     showCategory,
     showThumbnail,
   }: ReportDetailsProps) => {
+    setAssetGroup(asset_group);
+    setAssetType(asset_type);
     const payload = {
       asset_group,
       asset_type,
-      asset_category: "Company Report",
+      asset_category: reportsData?.asset_category,
       title: reportsData?.title,
       file_key: fileKey,
       ...(showYear && {
         date: reportsData?.date,
       }),
       ...(showThumbnail && { thumbnail_key: thumbnailKey }),
-      // ...(showCategory && { category: reportsData?.category }),
     };
     mutate(payload);
   };
 
   return (
-    <CreateReportContext.Provider
-      value={{
-        reportsData,
-        setReportsData,
-        fileKey,
-        setFileKey,
-        thumbnailKey,
-        setThumbnailKey,
-        selectedYear,
-        setSelectedYear,
-        selectedMonth,
-        setSelectedMonth,
-        selectedCategory,
-        setSelectedCategory,
-        loading,
-        setLoading,
-        handleInputChange,
-        handleCategory,
-        handleMonthChange,
-        handleYearChange,
-        addReport,
-        errMessages,
-      }}
-    >
-      {children}
-    </CreateReportContext.Provider>
+    <div className="relative">
+      <CreateReportContext.Provider
+        value={{
+          reportsData,
+          setReportsData,
+          fileKey,
+          setFileKey,
+          thumbnailKey,
+          setThumbnailKey,
+          selectedYear,
+          setSelectedYear,
+          selectedMonth,
+          setSelectedMonth,
+          selectedCategory,
+          setSelectedCategory,
+          loading,
+          setLoading,
+          handleInputChange,
+          handleCategory,
+          handleMonthChange,
+          handleYearChange,
+          addReport,
+          errMessages,
+          categories,
+          setCategories,
+          isPending,
+        }}
+      >
+        {children}
+      </CreateReportContext.Provider>
+    </div>
   );
 };

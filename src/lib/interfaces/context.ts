@@ -29,6 +29,10 @@ import React, {
     handleCategory:  (value: string) => void;
     addReport: ({ asset_group, asset_type, asset_category }: ReportDetailsProps) => void;
     errMessages: any;
+    categories : Array<string>;
+    setCategories: Dispatch<SetStateAction<string[]>>;
+    isPending: boolean;
+
   }
 
   export interface reportsDataProps {
@@ -36,7 +40,7 @@ import React, {
     date: string,
     file_key: string,
     thumbnail_key: string,
-    category: string,
+    asset_category: string,
   }
 
   export interface ReportDetailsProps {

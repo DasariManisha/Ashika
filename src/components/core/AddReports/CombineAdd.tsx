@@ -13,10 +13,12 @@ import { CreateReportContext } from "./CreateReportContext";
 import { CreateReportContextProps } from "@/lib/interfaces/context";
 import FileUpload from "../CommonComponents/UploadPage";
 import ThumbnailPreview from "../CommonComponents/thumbnailUpload";
-import Loading from "../CommonComponents/Loading";
 import { createRouter, useRouter } from "@tanstack/react-router";
 import CategorySelect from "./Category";
-// import { useNavigate } from "react-router-dom";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { getReportCategoryAPI } from "@/utils/services/reports";
+import Loading from "../Loading";
 
 interface AddProps {
   showTitle?: boolean;
@@ -48,14 +50,34 @@ const CombineAdd = ({
     CreateReportContext
   ) as CreateReportContextProps;
 
-  const { loading, addReport, errMessages } =
+  const { loading, addReport, errMessages, setCategories, handleCategory } =
     context as CreateReportContextProps;
+
+  const { isLoading, isError, error, data, isFetching } = useQuery({
+    queryKey: ["projects"],
+    queryFn: async () => {
+      try {
+        const response = await getReportCategoryAPI(asset_group, asset_type);
+
+        if (response.success) {
+          const assetCategories = response?.data?.data?.map(
+            (item: any) => item.asset_category
+          );
+          {
+            assetCategories.length > 1
+              ? setCategories(assetCategories)
+              : handleCategory(assetCategories[0]);
+          }
+        } else {
+        }
+      } catch {}
+    },
+  });
 
   return (
     <>
-      <div className="p-6  max-w-2xl mt-5 mx-auto bg-white rounded-xl shadow-md space-y-6">
+      <div className=" relative p-6  max-w-2xl mt-5 mx-auto bg-white rounded-xl shadow-md space-y-6">
         <Button
-          // onClick={() => console.log("back")}
           onClick={() => window.history.back()}
           variant="outline"
           className="flex items-center space-x-1 mb-4  h-[30px]"
@@ -87,7 +109,6 @@ const CombineAdd = ({
         </div>
 
         <ActionButtons
-          loading={loading}
           onCancel={() => window.history.back()}
           onSave={() =>
             addReport({
@@ -100,8 +121,8 @@ const CombineAdd = ({
             })
           }
         />
+        <Loading loading={isLoading} />
       </div>
-      <Loading loading={loading} />
     </>
   );
 };

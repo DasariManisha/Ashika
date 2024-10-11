@@ -10,13 +10,13 @@ import { CreateReportContextProps } from "@/lib/interfaces/context";
 import { CreateReportContext } from "./CreateReportContext";
 
 const CategorySelect = () => {
-  const categories = ["IPO Buy Bank OFS", "Event Update", "Other Report"];
+  // const categories = ["IPO Buy Bank OFS", "Event Update", "Other Report"];
 
   const context: CreateReportContextProps = useContext(
     CreateReportContext
   ) as CreateReportContextProps;
 
-  const { handleCategory, errMessages } = context;
+  const { handleCategory, errMessages, categories } = context;
 
   return (
     <div>

@@ -49,3 +49,15 @@ export const deleteReportAPI = async (id: number) => {
     throw err;
   }
 };
+
+export const getReportCategoryAPI = async (asset_group: string,asset_type: string) => {
+ const queryParams = {
+    asset_group,
+    asset_type,
+  };
+  try {
+    return await $fetch.get(`/assets/metadata`,queryParams);
+  } catch (err) {
+    throw err;
+  }
+};
