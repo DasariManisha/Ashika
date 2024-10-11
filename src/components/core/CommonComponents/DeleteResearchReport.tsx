@@ -1,12 +1,10 @@
 import { Button } from "@/components/ui/button";
 // import { deleteResearchReportsAPI } from "@/lib/services/researchReports";
-import Image from "next/image";
 import DeleteDialog from "../deleteDialog";
 import { deleteReportAPI } from "@/utils/services/reports";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import React, { Dispatch, SetStateAction, useState } from "react";
-
 interface deleteProps {
   info: any;
   getAllReports: ({
@@ -18,7 +16,6 @@ interface deleteProps {
   }: any) => void;
   setDel: Dispatch<SetStateAction<number>>;
 }
-
 const DeleteResearchReports = ({
   info,
   getAllReports,
@@ -27,7 +24,6 @@ const DeleteResearchReports = ({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [reportId, setReportId] = useState(0);
   const queryClient = useQueryClient();
-
   const { mutate, isPending, isError, error, data, isSuccess } = useMutation({
     mutationFn: async (id: number) => {
       try {
@@ -47,16 +43,13 @@ const DeleteResearchReports = ({
       }
     },
   });
-
   const handleDeleteClick = () => {
     mutate(reportId);
   };
-
   const handleDelete = (id: number) => {
     setDeleteDialogOpen(true);
     setReportId(id);
   };
-
   return (
     <>
       <Button

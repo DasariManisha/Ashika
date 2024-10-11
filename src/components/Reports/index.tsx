@@ -10,7 +10,6 @@ import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
 import { addSerial } from "@/lib/helpers/addSerial";
 import PreviewFile from "../core/CommonComponents/PreviewFile";
 import DeleteResearchReports from "../core/CommonComponents/DeleteResearchReport";
-
 interface ReportProps {
   asset_group: string;
   asset_type: string;
@@ -25,7 +24,6 @@ const Reports: React.FC<ReportProps> = ({
   const location = useLocation();
   const router = useRouter();
   const queryClient = useQueryClient();
-
   const searchParams = new URLSearchParams(location.search);
   const pageIndexParam = Number(searchParams.get("current_page")) || 1;
   const pageSizeParam = Number(searchParams.get("page_size")) || 10;
@@ -34,7 +32,6 @@ const Reports: React.FC<ReportProps> = ({
     pageSize: pageSizeParam,
   });
   const [del, setDel] = useState(1);
-
   const { isLoading, isError, error, data, isFetching } = useQuery({
     queryKey: ["projects", pagination, del],
     queryFn: async () => {
@@ -53,7 +50,6 @@ const Reports: React.FC<ReportProps> = ({
         to: `/${asset_group}/${asset_type}`,
         search: queryParams,
       });
-
       return response;
     },
     // staleTime: 5000,
@@ -63,7 +59,6 @@ const Reports: React.FC<ReportProps> = ({
     setPagination({ pageIndex, pageSize });
     // queryClient.invalidateQueries(["projects", { pageIndex, pageSize }]);
   };
-
   const paginationInfo = data?.data?.data?.pagination_info;
   const records = data?.data?.data?.records;
   const recordsWithSerials = addSerial(
@@ -76,9 +71,7 @@ const Reports: React.FC<ReportProps> = ({
       to: `/${asset_group}/${asset_type}/add`,
     });
   };
-
   const columnHelper = createColumnHelper<ResponseDataType>();
-
   const actionsColumns = [
     columnHelper.accessor("actions", {
       header: () => "Actions",
@@ -111,7 +104,6 @@ const Reports: React.FC<ReportProps> = ({
       footer: (info) => info.column.id,
     }),
   ];
-
   return (
     <div className="relative">
       <div className="flex justify-end mb-4">
@@ -140,5 +132,4 @@ const Reports: React.FC<ReportProps> = ({
     </div>
   );
 };
-
 export default Reports;
