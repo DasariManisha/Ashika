@@ -27,10 +27,15 @@ const Reports: React.FC<ReportProps> = ({
   const searchParams = new URLSearchParams(location.search);
   const pageIndexParam = Number(searchParams.get("current_page")) || 1;
   const pageSizeParam = Number(searchParams.get("page_size")) || 10;
+  const orderBY = searchParams.get("order_by")
+    ? searchParams.get("order_by")
+    : "";
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: pageIndexParam,
     pageSize: pageSizeParam,
+    order_by: orderBY,
   });
+
   const [del, setDel] = useState(1);
   const { isLoading, isError, error, data, isFetching } = useQuery({
     queryKey: ["projects", pagination, del],
@@ -38,6 +43,7 @@ const Reports: React.FC<ReportProps> = ({
       const response = await getAllPaginatedReports({
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
+        order_by: pagination.order_by,
         asset_group,
         asset_type,
         asset_category,
@@ -45,6 +51,7 @@ const Reports: React.FC<ReportProps> = ({
       const queryParams = {
         current_page: +pagination.pageIndex,
         page_size: +pagination.pageSize,
+        order_by: pagination.order_by ? pagination.order_by : undefined,
       };
       router.navigate({
         to: `/${asset_group}/${asset_type}`,
@@ -55,8 +62,8 @@ const Reports: React.FC<ReportProps> = ({
     // staleTime: 5000,
   });
 
-  const getAllReports = async ({ pageIndex, pageSize }: any) => {
-    setPagination({ pageIndex, pageSize });
+  const getAllReports = async ({ pageIndex, pageSize, order_by }: any) => {
+    setPagination({ pageIndex, pageSize, order_by });
     // queryClient.invalidateQueries(["projects", { pageIndex, pageSize }]);
   };
   const paginationInfo = data?.data?.data?.pagination_info;
@@ -86,6 +93,7 @@ const Reports: React.FC<ReportProps> = ({
                   getAllPaginatedReports({
                     pageIndex: pagination.pageIndex,
                     pageSize: pagination.pageSize,
+                    order_by: pagination.order_by,
                     asset_group,
                     asset_type,
                     asset_category,
@@ -124,6 +132,7 @@ const Reports: React.FC<ReportProps> = ({
               columns={[...testColumns, ...actionsColumns]}
               paginationDetails={paginationInfo}
               getData={getAllReports}
+              removeSortingForColumnIds={["serial", "actions"]}
             />
           </div>
         )}

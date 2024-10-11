@@ -3,6 +3,7 @@ import { $fetch } from "../fetch";
 interface GetAllPaginatedReportPropTypes {
   pageIndex: number;
   pageSize: number;
+  order_by: any;
   asset_group: string;
   asset_type: string;
   asset_category: string;
@@ -11,6 +12,7 @@ interface GetAllPaginatedReportPropTypes {
 export const getAllPaginatedReports = async ({
   pageIndex,
   pageSize,
+  order_by,
   asset_group,
   asset_type,
   asset_category,
@@ -20,6 +22,7 @@ export const getAllPaginatedReports = async ({
     const queryParams = {
       page: pageIndex,
       page_size: pageSize,
+      order_by: order_by,
       asset_group,
       asset_type,
       asset_category,

@@ -19,27 +19,34 @@ const Users = () => {
   const searchParams = new URLSearchParams(location.search);
   const pageIndexParam = Number(searchParams.get("current_page")) || 1;
   const pageSizeParam = Number(searchParams.get("page_size")) || 10;
+  const orderBY = searchParams.get("order_by")
+    ? searchParams.get("order_by")
+    : "";
 
   const [open, setOpen] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteId, setDeleteId] = useState<any>();
+  const [del, setDel] = useState(1);
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: pageIndexParam,
     pageSize: pageSizeParam,
+    order_by: orderBY,
   });
 
   const { isLoading, isError, error, data, isFetching } = useQuery({
-    queryKey: ["projects", pagination],
+    queryKey: ["projects", pagination, del],
     queryFn: async () => {
       const response = await getAllPaginatedUsers({
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
+        order_by: pagination.order_by,
       });
 
       const queryParams = {
         current_page: +pagination.pageIndex,
         page_size: +pagination.pageSize,
+        order_by: pagination.order_by ? pagination.order_by : undefined,
       };
       router.navigate({
         to: "/users",
@@ -48,7 +55,7 @@ const Users = () => {
 
       return response;
     },
-    staleTime: 5000,
+    // staleTime: 5000,
   });
 
   const usersData =
@@ -58,8 +65,8 @@ const Users = () => {
       data?.data?.data?.pagination_info?.page_size
     ) || [];
 
-  const getAllUsers = async ({ pageIndex, pageSize }: any) => {
-    setPagination({ pageIndex, pageSize });
+  const getAllUsers = async ({ pageIndex, pageSize, order_by }: any) => {
+    setPagination({ pageIndex, pageSize, order_by });
   };
 
   const deleteClient = async () => {
@@ -67,13 +74,13 @@ const Users = () => {
       setDeleteLoading(true);
       const response = await deleteUsersAPI(deleteId);
       if (response?.status === 200 || response?.status === 201) {
-        toast.success(
-          response?.data?.message || "User Deleted Successfully"
-        );
+        toast.success(response?.data?.message || "User Deleted Successfully");
         getAllPaginatedUsers({
           pageIndex: pagination.pageIndex,
           pageSize: pagination.pageSize,
+          order_by: pagination.order_by,
         });
+        setDel((prev) => prev + 1);
         onClickClose();
       }
     } catch (err: any) {
@@ -162,6 +169,7 @@ const Users = () => {
               columns={[...userColumns, ...userActions]}
               paginationDetails={data?.data?.data?.pagination_info}
               getData={getAllUsers}
+              removeSortingForColumnIds={["serial", "actions"]}
             />
           </div>
         )}

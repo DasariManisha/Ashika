@@ -133,7 +133,7 @@ const LoginComponent = () => {
           </Button>
         </form>
       </div>
-      <Loading loading={loading} />
+      {/* <Loading loading={loading} /> */}
     </div>
   );
 };

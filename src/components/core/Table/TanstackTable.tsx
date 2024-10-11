@@ -37,8 +37,6 @@ const TanStackTable: FC<pageProps> = ({
   paginationDetails,
   removeSortingForColumnIds,
 }) => {
-  // const { page, limit, sort_by, sort_type } = testAPI.useSearch();
-
   const [sorting, setSorting] = useState<SortingState>([]);
   const location = useLocation();
   const searchParams = new URLSearchParams(location?.search);
@@ -57,7 +55,9 @@ const TanStackTable: FC<pageProps> = ({
   const capturePageNum = (value: number) => {
     getData({
       ...searchParams,
-      pageSize: searchParams.get("page_size") ? searchParams.get("page_size") : 10,
+      pageSize: searchParams.get("page_size")
+        ? searchParams.get("page_size")
+        : 10,
       pageIndex: value,
     });
   };
@@ -68,21 +68,6 @@ const TanStackTable: FC<pageProps> = ({
       pageIndex: 1,
     });
   };
-  const SortItems = ({ header }: { header: { id: string } }) => (
-    <img
-      src={
-        ""
-        // sort_by === header.id
-        //   ? sort_type === "asc"
-        //     ? "/core/table/sort-asc.svg"
-        //     : "/core/table/sort-desc.svg"
-        //   : "/core/table/un-sort.svg"
-      }
-      height={28}
-      width={28}
-      alt={"unSort"}
-    />
-  );
 
   const getWidth = (id: string) => {
     const widthObj = columns.find((col) => col.id === id);
@@ -92,22 +77,33 @@ const TanStackTable: FC<pageProps> = ({
   const sortAndGetData = (header: any) => {
     if (
       removeSortingForColumnIds &&
+      removeSortingForColumnIds.length &&
       removeSortingForColumnIds.includes(header.id)
     ) {
       return;
     }
 
-    // const orderBy = sort_by === header.id ? header.id : "";
-    // const orderType =
-    //   sort_by === header.id && sort_type === "asc"
-    //     ? "desc"
-    //     : "asc";
+    let sortBy = header.id;
+    let sortDirection = "asc";
+    let orderBy = `${sortBy}:asc`;
 
-    // getData({
-    //   page: 1,
-    //   orderBy,
-    //   orderType,
-    // });
+    if (searchParams.get("order_by")?.startsWith(header.id)) {
+      if (searchParams.get("order_by") === `${header.id}:asc`) {
+        sortDirection = "desc";
+        orderBy = `${header.id}:desc`;
+      } else {
+        sortBy = "";
+        sortDirection = "";
+        orderBy = "";
+      }
+    }
+
+    getData({
+      ...searchParams,
+      pageIndex: searchParams.get("current_page"),
+      pageSize: searchParams.get("page_size"),
+      order_by: orderBy,
+    });
   };
 
   return (
@@ -148,7 +144,12 @@ const TanStackTable: FC<pageProps> = ({
                               header.column.columnDef.header,
                               header.getContext()
                             )}
-                            {/* <SortItems header={header} /> */}
+                            <SortItems
+                              header={header}
+                              removeSortingForColumnIds={
+                                removeSortingForColumnIds
+                              }
+                            />
                           </div>
                         )}
                       </TableHead>
@@ -201,3 +202,34 @@ const TanStackTable: FC<pageProps> = ({
 };
 
 export default TanStackTable;
+
+const SortItems = ({
+  header,
+  removeSortingForColumnIds,
+}: {
+  header: any;
+  removeSortingForColumnIds?: string[];
+}) => {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location?.search);
+
+  const sortBy = searchParams.get("order_by")?.split(":")[0];
+  const sortDirection = searchParams.get("order_by")?.split(":")[1];
+  if (removeSortingForColumnIds?.includes(header.id)) {
+    return null;
+  }
+
+  return (
+    <div style={{ display: "flex", alignItems: "center" }}>
+      {sortBy === header.id ? (
+        sortDirection === "asc" ? (
+          <img src="/table/sort-asc.svg" height={20} width={20} alt="Asc" />
+        ) : (
+          <img src="/table/sort-desc.svg" height={20} width={20} alt="Desc" />
+        )
+      ) : (
+        <img src="/table/sort-norm.svg" height={20} width={20} alt="No Sort" />
+      )}
+    </div>
+  );
+};
