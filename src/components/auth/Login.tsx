@@ -12,66 +12,63 @@ import { setUserDetails } from "@/redux/Modules/userlogin";
 import { toast } from "sonner";
 import Loading from "../core/CommonComponents/Loading";
 import { useNavigate } from "@tanstack/react-router";
+import { errPopper } from "@/utils/helpers/errorPopper";
 
 interface loginProps {
   email: string;
   password: string;
 }
-
 const LoginComponent = () => {
   const [loginDetails, setLoginDetails] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const [errors, setErrors] = useState<any>({});
   const [invalidErrors, setInvalidErrors] = useState<string[]>([]);
-
   const navigate = useNavigate({ from: "/" });
-
   const { mutate, isError, error } = useMutation({
     mutationFn: async (loginDetails: loginProps) => {
-      return await loginAPI(loginDetails);
-    },
-    onSuccess: (response: any) => {
-      console.log(response, "resp");
-      setLoading(false);
-      const { data } = response?.data;
-      const { access_token } = data;
-      const exp = new Date().getTime() + 10000;
-
-      Cookies.set("token", access_token, {
-        priority: "High",
-        expires: exp,
-      });
-
-      dispatch(setUserDetails(data));
-      if (response?.status === 200 || response?.status === 201) {
-        toast.success(response?.data?.message);
+      setLoading(true);
+      try {
+        const response = await loginAPI(loginDetails);
+        if (response?.status === 200 || response?.status === 201) {
+          toast.success(response?.data?.message);
+          const { data } = response?.data;
+          const { access_token } = data;
+          const expirationDate = new Date();
+          expirationDate.setTime(expirationDate.getTime() + 10000);
+          Cookies.set("token", access_token, {
+            priority: "High",
+            expires: expirationDate,
+          });
+          dispatch(setUserDetails(data));
+          navigate({
+            to: "/users",
+          });
+        }
+        if (response?.status === 422) {
+          const errData = response?.data?.errData;
+          setErrors(errData);
+        } else {
+          throw response;
+        }
+      } catch (errData) {
+        console.error(errData);
+        errPopper(errData);
+      } finally {
+        setLoading(false);
       }
-      navigate({
-        to: "/users",
-      });
     },
-    onError: (response: any) => {
-      setLoading(false);
-      if (response?.status === 422) {
-        const errData = error.response.data.errData;
-        setErrors(errData);
-      } else if (response?.status == 401 || response?.status == 404) {
-        setInvalidErrors(response?.message);
-        toast.error(response?.message);
-      } else {
-        throw response;
-      }
+    onError: (error) => {
+      console.error(error);
+      toast.error("An error occurred while logging in.");
     },
   });
-
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors([]);
-    setLoading(true); // Start loading when login is submitted
+    setLoading(true);
     mutate(loginDetails);
   };
-
   return (
     <div className="flex justify-center items-center h-screen w-2/3 mx-auto p-10">
       <div className="w-full h-full py-8">
@@ -109,7 +106,9 @@ const LoginComponent = () => {
                 setLoginDetails({ ...loginDetails, email: e.target.value })
               }
             />
-            {errors?.email && <p style={{ color: "red" }}>{error.email}</p>}
+            {errors?.email && (
+              <p style={{ color: "red" }}>{errors?.email[0]}</p>
+            )}
           </div>
           <div className="flex flex-col space-y-1">
             <Label className="font-normal uppercase text-lg" htmlFor="password">
@@ -125,7 +124,7 @@ const LoginComponent = () => {
               }
             />
             {errors?.password && (
-              <p style={{ color: "red" }}>{error.password}</p>
+              <p style={{ color: "red" }}>{errors?.password[0]}</p>
             )}
           </div>
           {/* <div className="self-end font-light text-md text-red-500 underline cursor-pointer">
@@ -147,5 +146,4 @@ const LoginComponent = () => {
     </div>
   );
 };
-
 export default LoginComponent;
