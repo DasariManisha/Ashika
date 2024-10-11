@@ -5,7 +5,7 @@ import {
   reportsDataProps,
 } from "@/lib/interfaces/context";
 import { addReportsAPI } from "@/utils/services/reports";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import React, {
   createContext,
   useState,
@@ -17,6 +17,7 @@ import React, {
 import dayjs from "dayjs";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
+import Loading from "../Loading";
 
 const data = {
   title: "",
@@ -60,6 +61,7 @@ export const CreateReportContext = createContext<CreateReportContextProps>({
   errMessages: {},
   categories: [],
   setCategories: () => [],
+  isPending: false,
 });
 
 export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
@@ -74,6 +76,8 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
     asset_category: "",
   });
   const [fileKey, setFileKey] = useState("");
+  const [assetGroup, setAssetGroup] = useState("");
+  const [assetType, setAssetType] = useState("");
   const [thumbnailKey, setThumbnailKey] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
@@ -124,15 +128,15 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
     onSuccess: (response: any) => {
       if (response?.status === 200 || response?.status === 201) {
         toast.success(response?.data?.message);
+        clearStates();
+        navigate({
+          to: `/${assetGroup}/${assetType}`,
+        });
       }
       if (response?.status === 422) {
         setErrorMessages(response?.data?.errData || [""]);
         toast.error(response?.data?.message);
-      } else {
       }
-      // navigate({
-      //   to: `/`,
-      // });
     },
   });
 
@@ -147,9 +151,6 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
     });
     setFileKey("");
     setThumbnailKey("");
-    // setSelectedCategory("");
-    // setSelectedMonth("");
-    // setSelectedYear("");
   };
 
   useEffect(() => {
@@ -164,6 +165,8 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
     showCategory,
     showThumbnail,
   }: ReportDetailsProps) => {
+    setAssetGroup(asset_group);
+    setAssetType(asset_type);
     const payload = {
       asset_group,
       asset_type,
@@ -174,39 +177,41 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
         date: reportsData?.date,
       }),
       ...(showThumbnail && { thumbnail_key: thumbnailKey }),
-      // ...(showCategory && { asset_category: reportsData?.category }),
     };
     mutate(payload);
   };
 
   return (
-    <CreateReportContext.Provider
-      value={{
-        reportsData,
-        setReportsData,
-        fileKey,
-        setFileKey,
-        thumbnailKey,
-        setThumbnailKey,
-        selectedYear,
-        setSelectedYear,
-        selectedMonth,
-        setSelectedMonth,
-        selectedCategory,
-        setSelectedCategory,
-        loading,
-        setLoading,
-        handleInputChange,
-        handleCategory,
-        handleMonthChange,
-        handleYearChange,
-        addReport,
-        errMessages,
-        categories,
-        setCategories,
-      }}
-    >
-      {children}
-    </CreateReportContext.Provider>
+    <div className="relative">
+      <CreateReportContext.Provider
+        value={{
+          reportsData,
+          setReportsData,
+          fileKey,
+          setFileKey,
+          thumbnailKey,
+          setThumbnailKey,
+          selectedYear,
+          setSelectedYear,
+          selectedMonth,
+          setSelectedMonth,
+          selectedCategory,
+          setSelectedCategory,
+          loading,
+          setLoading,
+          handleInputChange,
+          handleCategory,
+          handleMonthChange,
+          handleYearChange,
+          addReport,
+          errMessages,
+          categories,
+          setCategories,
+          isPending,
+        }}
+      >
+        {children}
+      </CreateReportContext.Provider>
+    </div>
   );
 };

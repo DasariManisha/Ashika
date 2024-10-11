@@ -109,7 +109,6 @@ const CombineAdd = ({
         </div>
 
         <ActionButtons
-          loading={loading}
           onCancel={() => window.history.back()}
           onSave={() =>
             addReport({
@@ -122,7 +121,7 @@ const CombineAdd = ({
             })
           }
         />
-        <Loading loading={loading || isLoading} />
+        <Loading loading={isLoading} />
       </div>
     </>
   );

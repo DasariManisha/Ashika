@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { navBarConstants } from "@/utils/helpers/navBarConstants";
+import { useSelector } from "react-redux";
 
 interface titleProps {
   title: string;
@@ -18,11 +19,23 @@ interface titleProps {
 
 function TopBar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const pathname = location.pathname;
+
+  const profileData = useSelector((state: any) => state.auth.user.user_details);
+
+  console.log(profileData, "profileData");
+
   const currentNavItem = navBarConstants.find((item: titleProps) =>
     pathname.includes(item.path)
   );
   const title = currentNavItem ? currentNavItem.title : null;
+
+  const handleLogout = () => {
+    navigate({
+      to: `/`,
+    });
+  };
 
   return (
     <div className="my-4 mr-4 p-5 flex justify-between items-center rounded-xl bg-white">
@@ -39,13 +52,15 @@ function TopBar() {
               <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
               <AvatarFallback>SB</AvatarFallback>
             </Avatar>
-            My Account
+            {profileData?.user_type}
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>{profileData?.user_type}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Update Password</DropdownMenuItem>
-            <DropdownMenuItem>Logout</DropdownMenuItem>
+            <DropdownMenuItem>{profileData?.email}</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout} className="text-red-500">
+              Logout
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
