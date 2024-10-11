@@ -136,8 +136,6 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
     },
   });
 
-  console.log(error, "err");
-
   const clearStates = () => {
     setErrorMessages({});
     setReportsData({

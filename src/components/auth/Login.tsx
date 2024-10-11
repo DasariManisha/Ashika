@@ -1,4 +1,3 @@
-import { useNavigate } from "@tanstack/react-router";
 import LogoPath from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +11,7 @@ import Cookies from "js-cookie";
 import { setUserDetails } from "@/redux/Modules/userlogin";
 import { toast } from "sonner";
 import Loading from "../core/CommonComponents/Loading";
+import { useNavigate } from "@tanstack/react-router";
 
 interface loginProps {
   email: string;
@@ -22,7 +22,9 @@ const LoginComponent = () => {
   const [loginDetails, setLoginDetails] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const [errors, setErrors] = useState<string[]>([]);
+  const [errors, setErrors] = useState<any>({});
+  const [invalidErrors, setInvalidErrors] = useState<string[]>([]);
+
   const navigate = useNavigate({ from: "/" });
 
   const { mutate, isError, error } = useMutation({
@@ -30,6 +32,7 @@ const LoginComponent = () => {
       return await loginAPI(loginDetails);
     },
     onSuccess: (response: any) => {
+      console.log(response, "resp");
       setLoading(false);
       const { data } = response?.data;
       const { access_token } = data;
@@ -41,19 +44,23 @@ const LoginComponent = () => {
       });
 
       dispatch(setUserDetails(data));
-      toast.success("Logged in Successfully!");
+      if (response?.status === 200 || response?.status === 201) {
+        toast.success(response?.data?.message);
+      }
       navigate({
-        to: `/users`,
+        to: "/users",
       });
     },
-    onError: (error: any) => {
+    onError: (response: any) => {
       setLoading(false);
-      if (error?.response?.status === 422) {
-        setErrors(
-          error?.response?.data?.errors || ["Invalid login credentials."]
-        );
+      if (response?.status === 422) {
+        const errData = error.response.data.errData;
+        setErrors(errData);
+      } else if (response?.status == 401 || response?.status == 404) {
+        setInvalidErrors(response?.message);
+        toast.error(response?.message);
       } else {
-        toast.error("Login failed. Please try again.");
+        throw response;
       }
     },
   });
@@ -66,28 +73,28 @@ const LoginComponent = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen w-2/3 mx-auto p-20">
-      <div className="w-full h-full py-10">
-        <div className="relative w-full h-full grid bg-black p-10 rounded-xl">
+    <div className="flex justify-center items-center h-screen w-2/3 mx-auto p-10">
+      <div className="w-full h-full py-8">
+        <div className="relative w-full h-full grid bg-black p-8 rounded-xl">
           <div className="absolute left-0 top-[0px] bg-[url('./img/grow.jpg')] bg-cover bg-no-repeat bg-center w-full h-full"></div>
-          <p className="[text-shadow:_0_1px_1px_rgb(255_255_255/_0.8)] text-4xl font-normal tracking-wide leading-[3rem] text-gray-800 relative self-center pt-10 text-center">
+          <p className="[text-shadow:_0_1px_1px_rgb(255_255_255/_0.8)] text-4xl font-normal tracking-wide leading-[3rem] text-gray-800 relative self-center pt-6 text-center">
             Growing & Sharing with You
           </p>
         </div>
       </div>
-      <div className="w-full h-full flex flex-col justify-center items-center space-y-8 relative ml-[-20px] bg-white shadow-xl p-8">
+      <div className="w-full h-full flex flex-col justify-center items-center space-y-6 relative ml-[-20px] bg-white shadow-xl p-6">
         <div>
           <img
             // src={LogoPath}
             src={"/img/Ashika-logo.svg"}
             alt="logo"
-            className="w-[200px] mx-auto animate-in zoom-in-0 duration-1000"
+            className="w-[180px] mx-auto animate-in zoom-in-0 duration-1000"
           />
         </div>
         <h1 className="text-3xl font-light">Login</h1>
         <form
           action=""
-          className="flex flex-col w-full px-5 space-y-8"
+          className="flex flex-col w-full px-5 space-y-6"
           onSubmit={handleLogin}
         >
           <div className="flex flex-col space-y-1">
@@ -96,13 +103,13 @@ const LoginComponent = () => {
             </Label>
             <Input
               className="appearance-none block py-1 h-12 text-lg rounded-none focus:outline-none focus:border-gray-500 focus-visible:ring-0 focus-visible:shadow-none"
-              type="email"
               id="email"
               placeholder="Email"
               onChange={(e) =>
                 setLoginDetails({ ...loginDetails, email: e.target.value })
               }
             />
+            {errors?.email && <p style={{ color: "red" }}>{error.email}</p>}
           </div>
           <div className="flex flex-col space-y-1">
             <Label className="font-normal uppercase text-lg" htmlFor="password">
@@ -117,10 +124,13 @@ const LoginComponent = () => {
                 setLoginDetails({ ...loginDetails, password: e.target.value })
               }
             />
+            {errors?.password && (
+              <p style={{ color: "red" }}>{error.password}</p>
+            )}
           </div>
-          <div className="self-end font-light text-md text-red-500 underline cursor-pointer">
+          {/* <div className="self-end font-light text-md text-red-500 underline cursor-pointer">
             Forgot Password?
-          </div>
+          </div> */}
           <Button
             type="submit"
             className="w-full flex justify-center items-center"
