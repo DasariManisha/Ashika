@@ -10,7 +10,7 @@ import { Check, ChevronDown, ChevronUp, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { addUsersAPI, getSingleUserAPI } from "@/utils/services/users";
+import { addUsersAPI, getSingleUserAPI, updateUserAPI } from "@/utils/services/users";
 import { errPopper } from "@/utils/helpers/errorPopper";
 
 interface ReportPayload {
@@ -38,7 +38,11 @@ const AddUser = () => {
 
   const { mutate, isPending, isError, error, data, isSuccess } = useMutation({
     mutationFn: async (payload: ReportPayload) => {
+      if(userId) {
+        return await updateUserAPI(payload);
+      }else {
       return await addUsersAPI(payload);
+      }
     },
     onSuccess: (response: any) => {
       if (response?.status === 200 || response?.status === 201) {
@@ -53,6 +57,7 @@ const AddUser = () => {
       }
     },
   });
+  
 
   const addUser = () => {
     const payload = {
@@ -61,7 +66,6 @@ const AddUser = () => {
       email: userData?.email,
       password: userData?.password,
       designation: userData?.designation,
-      //   ...userData,
       user_type: userType,
     };
     mutate(payload);
