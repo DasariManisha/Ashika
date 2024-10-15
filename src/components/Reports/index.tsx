@@ -30,7 +30,7 @@ const Reports: React.FC<ReportProps> = ({
   const orderBY = searchParams.get("order_by")
     ? searchParams.get("order_by")
     : "";
-  const [pagination, setPagination] = useState<PaginationState>({
+  const [pagination, setPagination] = useState({
     pageIndex: pageIndexParam,
     pageSize: pageSizeParam,
     order_by: orderBY,
@@ -54,7 +54,12 @@ const Reports: React.FC<ReportProps> = ({
         order_by: pagination.order_by ? pagination.order_by : undefined,
       };
       router.navigate({
-        to: `/${asset_group}/${asset_type}`,
+        to:
+          asset_group === "downloads"
+            ? `/${asset_group}`
+            : asset_group === "margins"
+              ? `/margin-updates`
+              : `/${asset_group}/${asset_type}`,
         search: queryParams,
       });
       return response;
@@ -75,7 +80,12 @@ const Reports: React.FC<ReportProps> = ({
   );
   const handleNavigation = () => {
     navigate({
-      to: `/${asset_group}/${asset_type}/add`,
+      to:
+        asset_group === "downloads"
+          ? `/${asset_group}/add`
+          : asset_group === "margins"
+            ? `/margin-updates/add`
+            : `/${asset_group}/${asset_type}/add`,
     });
   };
   const columnHelper = createColumnHelper<ResponseDataType>();
@@ -106,6 +116,23 @@ const Reports: React.FC<ReportProps> = ({
               }
               setDel={setDel}
             />
+            <Button
+              title="edit"
+              onClick={() =>
+                navigate({
+                  to:
+                    asset_group === "downloads"
+                      ? `/${asset_group}/${info.row.original.id}/update`
+                      : asset_group === "margins"
+                        ? `/margin-updates/${info.row.original.id}/update`
+                        : `/${asset_group}/${asset_type}/${info.row.original.id}/update`,
+                })
+              }
+              size={"sm"}
+              variant={"ghost"}
+            >
+              <img src={"/table/edit.svg"} alt="edit" height={16} width={16} />
+            </Button>
           </div>
         );
       },

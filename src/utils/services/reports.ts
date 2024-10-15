@@ -61,3 +61,14 @@ export const getReportCategoryAPI = async (asset_group: string,asset_type: strin
     throw err;
   }
 };
+
+export const getSingleReportAPI = async (reportId: string | undefined,) => {
+  const queryParams = {
+    metadata: true
+  }
+   try {
+     return await $fetch.get(`/assets/${reportId}`,queryParams);
+   } catch (err) {
+     throw err;
+   }
+ };

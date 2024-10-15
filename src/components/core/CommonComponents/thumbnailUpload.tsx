@@ -10,30 +10,17 @@ const ThumbnailPreview = ({ accept }: thumbnailUploadProps) => {
     CreateReportContext
   ) as CreateReportContextProps;
 
-  const { setThumbnailKey, errMessages } = context;
+  const { setThumbnailKey, errMessages, preview } = context;
   const {
     startUploading,
     handleFileDrop,
     handleDragOver,
     handleFileSelect,
-    selectedFiles,
-    uploadSuccess,
-    handleRemoveFile,
     isDragging,
-    preview,
   } = useUploadFileHook({
     accept,
     setFileKey: setThumbnailKey,
   });
-
-  //   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //     const file = event.target.files?.[0];
-  //     if (file) {
-  //       const objectUrl = URL.createObjectURL(file);
-  //       setPreview(objectUrl);
-  //       handleFileSelect(event);
-  //     }
-  //   };
 
   return (
     <div className="lg:w-1/3 space-y-4">
