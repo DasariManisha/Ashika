@@ -36,7 +36,7 @@ const LoginComponent = () => {
           const { data } = response?.data;
           const { access_token } = data;
           const expirationDate = new Date();
-          expirationDate.setTime(expirationDate.getTime() + 30 * 10000);
+          expirationDate.setTime(expirationDate.getTime() + 300 * 10000);
           Cookies.set("token", access_token, {
             priority: "High",
             expires: expirationDate,

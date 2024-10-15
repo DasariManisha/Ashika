@@ -15,9 +15,7 @@ const PreviewFile = ({ info }: any) => {
 
   const { setThumbnailKey, setPreview } = context;
 
-  const { filePreview } = usePresignedUrlHook({
-    info,
-  });
+  const { filePreview } = usePresignedUrlHook();
 
   const handleFilePreview = async (key: string) => {
     const url = await filePreview(key);

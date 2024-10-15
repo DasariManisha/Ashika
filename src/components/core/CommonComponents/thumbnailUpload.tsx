@@ -47,7 +47,7 @@ const ThumbnailPreview = ({ accept }: thumbnailUploadProps) => {
         accept={accept}
         id="file-input"
         className="hidden"
-        onChange={handleFileSelect}
+        onChange={(e) => handleFileSelect(e, "thumbnailUpload")}
       />
       <Button
         variant="outline"

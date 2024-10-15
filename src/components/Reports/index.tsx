@@ -95,6 +95,23 @@ const Reports: React.FC<ReportProps> = ({
       cell: (info: any) => {
         return (
           <div>
+            <Button
+              title="edit"
+              onClick={() =>
+                navigate({
+                  to:
+                    asset_group === "downloads"
+                      ? `/${asset_group}/${info.row.original.id}/update`
+                      : asset_group === "margins"
+                        ? `/margin-updates/${info.row.original.id}/update`
+                        : `/${asset_group}/${asset_type}/${info.row.original.id}/update`,
+                })
+              }
+              size={"sm"}
+              variant={"ghost"}
+            >
+              <img src={"/table/edit.svg"} alt="edit" height={16} width={16} />
+            </Button>
             <PreviewFile info={info} />
             <DeleteResearchReports
               info={info}
@@ -116,23 +133,6 @@ const Reports: React.FC<ReportProps> = ({
               }
               setDel={setDel}
             />
-            <Button
-              title="edit"
-              onClick={() =>
-                navigate({
-                  to:
-                    asset_group === "downloads"
-                      ? `/${asset_group}/${info.row.original.id}/update`
-                      : asset_group === "margins"
-                        ? `/margin-updates/${info.row.original.id}/update`
-                        : `/${asset_group}/${asset_type}/${info.row.original.id}/update`,
-                })
-              }
-              size={"sm"}
-              variant={"ghost"}
-            >
-              <img src={"/table/edit.svg"} alt="edit" height={16} width={16} />
-            </Button>
           </div>
         );
       },

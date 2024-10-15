@@ -23,6 +23,7 @@ import {
 } from "@/utils/services/reports";
 import Loading from "../Loading";
 import { errPopper } from "@/utils/helpers/errorPopper";
+import usePresignedUrlHook from "../CommonComponents/usePresignedUrlHook";
 
 interface AddProps {
   showTitle?: boolean;
@@ -50,9 +51,6 @@ const CombineAdd = ({
   const router = useRouter();
   const { reportId } = useParams({ strict: false });
 
-  console.log(reportId, "id");
-  // const navigate = useNavigate();
-
   const context: CreateReportContextProps = useContext(
     CreateReportContext
   ) as CreateReportContextProps;
@@ -68,7 +66,11 @@ const CombineAdd = ({
     setSelectedMonth,
     reportsData,
     setSelectedFiles,
+    setFileKey,
+    setPreview,
   } = context as CreateReportContextProps;
+
+  const { filePreview } = usePresignedUrlHook();
 
   const { isLoading } = useQuery({
     queryKey: ["projects"],
@@ -94,41 +96,57 @@ const CombineAdd = ({
       }
     },
   });
-  const { isFetching } = useQuery({
-    queryKey: ["getSingleReport"],
-    queryFn: async () => {
-      try {
-        const response = await getSingleReportAPI(reportId);
 
-        if (response.success) {
-          const data = response?.data?.data;
-          setReportsData({
-            title: data?.title,
-            date: data?.date,
-            file_key: data?.file_key,
-            thumbnail_key: data?.thumbnail_key,
-            asset_category: "",
-          });
-          assignDate(data?.date);
-          const file = {
-            fileName: data?.file_key,
-            fileSize: "",
-            fileType: "",
-          };
-          setSelectedFiles([file]);
-        } else {
-          throw response;
+  const getSingleReport = async () => {
+    try {
+      const response = await getSingleReportAPI(reportId);
+
+      if (response.success) {
+        const data = response?.data?.data;
+        setReportsData((prev) => ({
+          ...prev,
+          title: data?.title,
+          date: data?.date,
+          file_key: data?.file_key,
+          thumbnail_key: data?.thumbnail_key,
+          ...(data?.asset_metadata?.asset_category && {
+            asset_category: data?.asset_metadata?.asset_category,
+          }),
+        }));
+
+        setFileKey(data?.file_key);
+        assignDate(data?.date);
+        const file = {
+          fileName: data?.file_key,
+          fileSize: "",
+        };
+        setSelectedFiles([file]);
+        if (showThumbnail && data?.thumbnail_key) {
+          fetchThumbnailPreview(data);
         }
-      } catch (errData) {
-        console.error(errData);
-        errPopper(errData);
+      } else {
+        throw response;
       }
-    },
+    } catch (errData) {
+      console.error(errData);
+      errPopper(errData);
+    }
+  };
+
+  const { isFetching } = useQuery({
+    queryKey: ["getSingleReport", reportId],
+    queryFn: getSingleReport,
+    enabled: !!reportId,
   });
 
   const assignDate = (date: string) => {
     setSelectedYear(dayjs(date).format("YYYY"));
     setSelectedMonth(dayjs(date).format("MM"));
+  };
+
+  const fetchThumbnailPreview = async (data: any) => {
+    const url = await filePreview(data?.thumbnail_key);
+    setPreview(url);
   };
 
   return (

@@ -60,21 +60,23 @@ const useUploadFileHook = ({ accept, setFileKey,type }: fileUploadProps) => {
     }
   };
 
-  const handleFileSelect = (e: any) => {
+  const handleFileSelect = (e: any,uploadType:string) => {
     const file = e.target.files[0];
     if (file) {
       const objectUrl = URL.createObjectURL(file);
-      setPreview(objectUrl);
+      if(uploadType == "thumbnailUpload"){
+        setPreview(objectUrl);
+      }
+      
     }
     const files = Array.from(e.target.files).map((file: any) => ({
       fileName: file.name,
       fileSize: (file.size / 1024).toFixed(2),
       fileType: file.type,
     }));
-    if (type == "import") {
-      setFileKey(file);
-      setSelectedFiles(files);
-    }else {
+    if(uploadType == "thumbnailUpload"){
+      uploadFile(files[0], file);
+    } else {
       uploadFile(files[0], file);
       setSelectedFiles(files);
     }

@@ -42,6 +42,15 @@ export const addReportsAPI = async (payload: any) => {
   }
 };
 
+export const updateReportsAPI = async (payload: any,id: string | undefined) => {
+  try {
+    // return await $fetch.get(`reports?page=${pageIndex}&limit=${pageSize}&report_group=${reportGroup}&report_type=${reportType}&category_type=${categoryType}`)
+    return await $fetch.patch(`/assets/${id}`, payload);
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const deleteReportAPI = async (id: number) => {
   try {
     return await $fetch.delete(`/assets/${id}`);

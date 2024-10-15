@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useContext, useState } from "react";
 import { CreateReportContext } from "../AddReports/CreateReportContext";
 
-const usePresignedUrlHook = ({ info }: any) => {
+const usePresignedUrlHook = () => {
     const [loading, setLoading] = useState(false);
 
   const context: CreateReportContextProps = useContext(
@@ -24,7 +24,6 @@ const usePresignedUrlHook = ({ info }: any) => {
 
       if (response.status === 200 || response.status === 201) {
         const url = response?.data?.data?.download_url;
-        setPreview(url);
         return url
         // await openFileInNewTab(url);
       } else {

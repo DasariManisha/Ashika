@@ -56,7 +56,7 @@ const FileUpload = ({ accept, type }: fileProps) => {
           </label>
           <input
             type="file"
-            onChange={handleFileSelect}
+            onChange={(e) => handleFileSelect(e, "fileUpload")}
             className="hidden"
             accept={accept}
             id="fileInput"
