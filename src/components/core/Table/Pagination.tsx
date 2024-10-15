@@ -36,7 +36,6 @@ const Pagination = ({
   limitOptionsFromProps,
   paginationDetails,
 }: DynamicPaginationProps) => {
-  
   const [currentPage, setCurrentPage] = useState<any>();
   const [pageValue, setPageValue] = useState<any>();
   const [limitOptions, setLimitOptions] = useState<
@@ -160,12 +159,21 @@ const Pagination = ({
         <PaginationContent className="px-1 py-0">
           <PaginationItem>
             <PaginationPrevious
-              href="#"
+              href={currentPage === 1 ? undefined : "#"}
               onClick={(e) => {
+                if (currentPage === 1) {
+                  e.preventDefault();
+                  return;
+                }
                 e.preventDefault();
                 handlePageChange(currentPage - 1);
               }}
               aria-disabled={currentPage === 1}
+              className={`${
+                currentPage === 1
+                  ? "pointer-events-none cursor-not-allowed opacity-50"
+                  : "cursor-pointer opacity-100"
+              }`}
             />
           </PaginationItem>
 
@@ -192,12 +200,21 @@ const Pagination = ({
 
           <PaginationItem>
             <PaginationNext
-              href="#"
+              href={currentPage === totalPages ? undefined : "#"}
               onClick={(e) => {
+                if (currentPage === totalPages) {
+                  e.preventDefault();
+                  return;
+                }
                 e.preventDefault();
                 handlePageChange(currentPage + 1);
               }}
               aria-disabled={currentPage === totalPages}
+              className={`${
+                currentPage === totalPages
+                  ? "pointer-events-none cursor-not-allowed opacity-50"
+                  : "cursor-pointer opacity-100"
+              }`}
             />
           </PaginationItem>
         </PaginationContent>

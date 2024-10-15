@@ -27,8 +27,10 @@ const LoginComponent = () => {
   const { mutate, isError, error } = useMutation({
     mutationFn: async (loginDetails: loginProps) => {
       setLoading(true);
+
       try {
         const response = await loginAPI(loginDetails);
+
         if (response?.status === 200 || response?.status === 201) {
           toast.success(response?.data?.message);
           const { data } = response?.data;
@@ -39,7 +41,9 @@ const LoginComponent = () => {
             priority: "High",
             expires: expirationDate,
           });
+
           dispatch(setUserDetails(data));
+
           navigate({
             to: "/users",
           });
