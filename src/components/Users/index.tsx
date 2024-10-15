@@ -30,7 +30,6 @@ const Users = () => {
   const [deleteId, setDeleteId] = useState<any>();
   const [del, setDel] = useState(1);
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
-  console.log(selectedUsers, "selectedUsers");
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: pageIndexParam,
@@ -142,7 +141,6 @@ const Users = () => {
     });
   };
 
-  // Function to handle individual checkbox toggle
   const handleToggleCheckbox = (userId: number) => {
     setSelectedUsers((prevSelected) =>
       prevSelected.includes(userId)
@@ -151,13 +149,12 @@ const Users = () => {
     );
   };
 
-  // Function to handle "select all" checkbox
   const handleToggleSelectAll = () => {
     if (selectedUsers.length === usersData.length) {
-      setSelectedUsers([]); // Deselect all
+      setSelectedUsers([]);
     } else {
       const allUserIds = usersData.map((user: any) => user.id);
-      setSelectedUsers(allUserIds); // Select all
+      setSelectedUsers(allUserIds);
     }
   };
 
@@ -250,7 +247,7 @@ const Users = () => {
           <div>
             <TanStackTable
               data={usersData}
-              columns={[...userColumns, ...userActions]} // Include selection column
+              columns={[...userColumns, ...userActions]}
               paginationDetails={data?.data?.data?.pagination_info}
               getData={getAllUsers}
               removeSortingForColumnIds={["serial", "actions", "select"]}
