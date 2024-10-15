@@ -51,6 +51,14 @@ export const deleteUsersAPI = async (id:number) => {
     }
 }
 
+export const multipleDeleteUsersAPI = async (payload:any) => {
+  try {
+      return await $fetch.delete(`/delete-multiple/new`, payload);
+  } catch (err) {
+      throw err
+  }
+}
+
 export const getSingleUserAPI = async (userId: string | undefined,) => {
   const queryParams = {
     metadata: true
