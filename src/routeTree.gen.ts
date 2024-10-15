@@ -11,9 +11,11 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as ForgotPasswordImport } from './routes/forgot-password'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as IndexImport } from './routes/index'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
+import { Route as AuthResetPasswordImport } from './routes/auth/reset-password'
 import { Route as LayoutTestImport } from './routes/_layout/test'
 import { Route as LayoutMarginUpdatesImport } from './routes/_layout/margin-updates'
 import { Route as LayoutDownloadsImport } from './routes/_layout/downloads'
@@ -48,6 +50,11 @@ import { Route as LayoutAcclAnnualReportsAddIndexImport } from './routes/_layout
 
 // Create/Update Routes
 
+const ForgotPasswordRoute = ForgotPasswordImport.update({
+  path: '/forgot-password',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const LayoutRoute = LayoutImport.update({
   id: '/_layout',
   getParentRoute: () => rootRoute,
@@ -61,6 +68,11 @@ const IndexRoute = IndexImport.update({
 const LayoutIndexRoute = LayoutIndexImport.update({
   path: '/',
   getParentRoute: () => LayoutRoute,
+} as any)
+
+const AuthResetPasswordRoute = AuthResetPasswordImport.update({
+  path: '/auth/reset-password',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const LayoutTestRoute = LayoutTestImport.update({
@@ -259,6 +271,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutImport
       parentRoute: typeof rootRoute
     }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordImport
+      parentRoute: typeof rootRoute
+    }
     '/_layout/about': {
       id: '/_layout/about'
       path: '/about'
@@ -293,6 +312,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/test'
       preLoaderRoute: typeof LayoutTestImport
       parentRoute: typeof LayoutImport
+    }
+    '/auth/reset-password': {
+      id: '/auth/reset-password'
+      path: '/auth/reset-password'
+      fullPath: '/auth/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordImport
+      parentRoute: typeof rootRoute
     }
     '/_layout/': {
       id: '/_layout/'
@@ -583,11 +609,13 @@ const LayoutRouteWithChildren =
 export interface FileRoutesByFullPath {
   '/': typeof LayoutIndexRoute
   '': typeof LayoutRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
   '/about': typeof LayoutAboutRoute
   '/add-client': typeof LayoutAddClientRoute
   '/downloads': typeof LayoutDownloadsRoute
   '/margin-updates': typeof LayoutMarginUpdatesRoute
   '/test': typeof LayoutTestRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/fund-transfer': typeof LayoutFundTransferIndexRoute
   '/users': typeof LayoutUsersIndexRoute
   '/accl/annual-reports': typeof LayoutAcclAnnualReportsIndexRoute
@@ -618,11 +646,13 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof LayoutIndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/about': typeof LayoutAboutRoute
   '/add-client': typeof LayoutAddClientRoute
   '/downloads': typeof LayoutDownloadsRoute
   '/margin-updates': typeof LayoutMarginUpdatesRoute
   '/test': typeof LayoutTestRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/fund-transfer': typeof LayoutFundTransferIndexRoute
   '/users': typeof LayoutUsersIndexRoute
   '/accl/annual-reports': typeof LayoutAcclAnnualReportsIndexRoute
@@ -655,11 +685,13 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/_layout': typeof LayoutRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
   '/_layout/about': typeof LayoutAboutRoute
   '/_layout/add-client': typeof LayoutAddClientRoute
   '/_layout/downloads': typeof LayoutDownloadsRoute
   '/_layout/margin-updates': typeof LayoutMarginUpdatesRoute
   '/_layout/test': typeof LayoutTestRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/_layout/': typeof LayoutIndexRoute
   '/_layout/fund-transfer/': typeof LayoutFundTransferIndexRoute
   '/_layout/users/': typeof LayoutUsersIndexRoute
@@ -694,11 +726,13 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | ''
+    | '/forgot-password'
     | '/about'
     | '/add-client'
     | '/downloads'
     | '/margin-updates'
     | '/test'
+    | '/auth/reset-password'
     | '/fund-transfer'
     | '/users'
     | '/accl/annual-reports'
@@ -728,11 +762,13 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/forgot-password'
     | '/about'
     | '/add-client'
     | '/downloads'
     | '/margin-updates'
     | '/test'
+    | '/auth/reset-password'
     | '/fund-transfer'
     | '/users'
     | '/accl/annual-reports'
@@ -763,11 +799,13 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_layout'
+    | '/forgot-password'
     | '/_layout/about'
     | '/_layout/add-client'
     | '/_layout/downloads'
     | '/_layout/margin-updates'
     | '/_layout/test'
+    | '/auth/reset-password'
     | '/_layout/'
     | '/_layout/fund-transfer/'
     | '/_layout/users/'
@@ -801,11 +839,15 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LayoutRoute: typeof LayoutRouteWithChildren
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LayoutRoute: LayoutRouteWithChildren,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
 }
 
 export const routeTree = rootRoute
@@ -821,7 +863,9 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/_layout"
+        "/_layout",
+        "/forgot-password",
+        "/auth/reset-password"
       ]
     },
     "/": {
@@ -864,6 +908,9 @@ export const routeTree = rootRoute
         "/_layout/research-reports/weekly-insights-reports/add/"
       ]
     },
+    "/forgot-password": {
+      "filePath": "forgot-password.tsx"
+    },
     "/_layout/about": {
       "filePath": "_layout/about.tsx",
       "parent": "/_layout"
@@ -883,6 +930,9 @@ export const routeTree = rootRoute
     "/_layout/test": {
       "filePath": "_layout/test.tsx",
       "parent": "/_layout"
+    },
+    "/auth/reset-password": {
+      "filePath": "auth/reset-password.tsx"
     },
     "/_layout/": {
       "filePath": "_layout/index.tsx",
