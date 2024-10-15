@@ -13,12 +13,16 @@ import { CreateReportContext } from "./CreateReportContext";
 import { CreateReportContextProps } from "@/lib/interfaces/context";
 import FileUpload from "../CommonComponents/UploadPage";
 import ThumbnailPreview from "../CommonComponents/thumbnailUpload";
-import { createRouter, useRouter } from "@tanstack/react-router";
+import { createRouter, useParams, useRouter } from "@tanstack/react-router";
 import CategorySelect from "./Category";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { getReportCategoryAPI } from "@/utils/services/reports";
+import {
+  getReportCategoryAPI,
+  getSingleReportAPI,
+} from "@/utils/services/reports";
 import Loading from "../Loading";
+import { errPopper } from "@/utils/helpers/errorPopper";
 
 interface AddProps {
   showTitle?: boolean;
@@ -44,16 +48,29 @@ const CombineAdd = ({
   asset_category = "",
 }: AddProps) => {
   const router = useRouter();
+  const { reportId } = useParams({ strict: false });
+
+  console.log(reportId, "id");
   // const navigate = useNavigate();
 
   const context: CreateReportContextProps = useContext(
     CreateReportContext
   ) as CreateReportContextProps;
 
-  const { loading, addReport, errMessages, setCategories, handleCategory } =
-    context as CreateReportContextProps;
+  const {
+    loading,
+    addReport,
+    errMessages,
+    setCategories,
+    handleCategory,
+    setReportsData,
+    setSelectedYear,
+    setSelectedMonth,
+    reportsData,
+    setSelectedFiles,
+  } = context as CreateReportContextProps;
 
-  const { isLoading, isError, error, data, isFetching } = useQuery({
+  const { isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
       try {
@@ -69,10 +86,50 @@ const CombineAdd = ({
               : handleCategory(assetCategories[0]);
           }
         } else {
+          throw response;
         }
-      } catch {}
+      } catch (errData) {
+        console.error(errData);
+        errPopper(errData);
+      }
     },
   });
+  const { isFetching } = useQuery({
+    queryKey: ["getSingleReport"],
+    queryFn: async () => {
+      try {
+        const response = await getSingleReportAPI(reportId);
+
+        if (response.success) {
+          const data = response?.data?.data;
+          setReportsData({
+            title: data?.title,
+            date: data?.date,
+            file_key: data?.file_key,
+            thumbnail_key: data?.thumbnail_key,
+            asset_category: "",
+          });
+          assignDate(data?.date);
+          const file = {
+            fileName: data?.file_key,
+            fileSize: "",
+            fileType: "",
+          };
+          setSelectedFiles([file]);
+        } else {
+          throw response;
+        }
+      } catch (errData) {
+        console.error(errData);
+        errPopper(errData);
+      }
+    },
+  });
+
+  const assignDate = (date: string) => {
+    setSelectedYear(dayjs(date).format("YYYY"));
+    setSelectedMonth(dayjs(date).format("MM"));
+  };
 
   return (
     <>
@@ -121,7 +178,7 @@ const CombineAdd = ({
             })
           }
         />
-        <Loading loading={isLoading} />
+        <Loading loading={isLoading || isFetching} />
       </div>
     </>
   );

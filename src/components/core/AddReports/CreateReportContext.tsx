@@ -18,6 +18,7 @@ import dayjs from "dayjs";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 import Loading from "../Loading";
+import { fileDetail } from "@/lib/interfaces/upload";
 
 const data = {
   title: "",
@@ -62,6 +63,10 @@ export const CreateReportContext = createContext<CreateReportContextProps>({
   categories: [],
   setCategories: () => [],
   isPending: false,
+  selectedFiles: [],
+  setSelectedFiles: () => [],
+  preview: "",
+  setPreview: () => {},
 });
 
 export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
@@ -75,6 +80,8 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
     thumbnail_key: "",
     asset_category: "",
   });
+  const [selectedFiles, setSelectedFiles] = useState<fileDetail[]>([]);
+  const [preview, setPreview] = useState<string>("");
   const [fileKey, setFileKey] = useState("");
   const [assetGroup, setAssetGroup] = useState("");
   const [assetType, setAssetType] = useState("");
@@ -208,6 +215,10 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
           categories,
           setCategories,
           isPending,
+          selectedFiles,
+          setSelectedFiles,
+          preview,
+          setPreview,
         }}
       >
         {children}

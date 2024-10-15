@@ -17,13 +17,12 @@ const FileUpload = ({ accept, type }: fileProps) => {
     CreateReportContext
   ) as CreateReportContextProps;
 
-  const { setFileKey } = context;
+  const { setFileKey, selectedFiles, setSelectedFiles } = context;
   const {
     startUploading,
     handleFileDrop,
     handleDragOver,
     handleFileSelect,
-    selectedFiles,
     uploadSuccess,
     handleRemoveFile,
     isDragging,
@@ -72,7 +71,7 @@ const FileUpload = ({ accept, type }: fileProps) => {
             uploadSuccess ? "bg-green-300 rounded " : ""
           }`}
         >
-          {selectedFiles.map((file, index) => {
+          {selectedFiles.map((file: any, index: any) => {
             const displayFileName =
               file.fileName.length > 40
                 ? `${file.fileName.slice(0, 40)}...`

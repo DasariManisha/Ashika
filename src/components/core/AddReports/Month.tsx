@@ -29,11 +29,11 @@ const MonthSelect = () => {
     CreateReportContext
   ) as CreateReportContextProps;
 
-  const { handleMonthChange } = context;
+  const { handleMonthChange, selectedMonth } = context;
 
   return (
     <div>
-      <Select onValueChange={handleMonthChange}>
+      <Select value={selectedMonth} onValueChange={handleMonthChange}>
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Select Month" />
         </SelectTrigger>

@@ -14,10 +14,12 @@ const YearSelect = () => {
     CreateReportContext
   ) as CreateReportContextProps;
 
-  const { handleYearChange, errMessages } = context;
+  const { handleYearChange, errMessages, selectedYear } = context;
+
+  console.log(selectedYear, "selectYear");
   return (
     <div>
-      <Select onValueChange={handleYearChange}>
+      <Select value={selectedYear} onValueChange={handleYearChange}>
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Select Year" />
         </SelectTrigger>

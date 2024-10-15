@@ -7,6 +7,7 @@ import React, {
     SetStateAction,
     ChangeEvent,
   } from "react";
+import { fileDetail } from "./upload";
   
   export interface CreateReportContextProps {
     reportsData: reportsDataProps;
@@ -32,6 +33,10 @@ import React, {
     categories : Array<string>;
     setCategories: Dispatch<SetStateAction<string[]>>;
     isPending: boolean;
+    selectedFiles: any;
+    setSelectedFiles: Dispatch<SetStateAction<fileDetail[]>>
+    preview : string;
+    setPreview: Dispatch<SetStateAction<string>>;
 
   }
 
