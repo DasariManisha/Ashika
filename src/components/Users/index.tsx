@@ -105,6 +105,11 @@ const Users = () => {
       to: "/users/add",
     });
   };
+  const handleUpdate = (id: any) => {
+    navigate({
+      to: `/users/${id}/update`,
+    });
+  };
 
   const userActions = [
     {
@@ -115,15 +120,23 @@ const Users = () => {
           <div>
             <Button
               title="View"
-              // onClick={() => {
-              //   router.push(
-              //     `/interviews/${id}/candidates/${info.row.original.id}/view`
-              //   );
-              // }}
               size={"sm"}
               variant={"ghost"}
             >
               <img src={"/table/view.svg"} alt="view" height={16} width={16} />
+            </Button>
+            <Button
+              title="Edit"
+              onClick={() => {
+                handleUpdate(info.row.original.id)
+                // navigate({
+                //   to:`/users/${info.row.original.id}/update`
+                // });
+              }}
+              size={"sm"}
+              variant={"ghost"}
+            >
+              <img src={"/table/edit.svg"} alt="view" height={16} width={16} />
             </Button>
             <Button
               title="delete"

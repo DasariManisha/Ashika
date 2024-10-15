@@ -34,6 +34,7 @@ import { Route as LayoutAcclPoliciesReportsIndexImport } from './routes/_layout/
 import { Route as LayoutAcclInvestorRelationsReportsIndexImport } from './routes/_layout/accl/investor-relations-reports/index'
 import { Route as LayoutAcclFamiliarizationProgrammeReportsIndexImport } from './routes/_layout/accl/familiarization-programme-reports/index'
 import { Route as LayoutAcclAnnualReportsIndexImport } from './routes/_layout/accl/annual-reports/index'
+import { Route as LayoutUsersUserIdUpdateImport } from './routes/_layout/users/$userId/update'
 import { Route as LayoutResearchReportsWeeklyInsightsReportsAddIndexImport } from './routes/_layout/research-reports/weekly-insights-reports/add/index'
 import { Route as LayoutResearchReportsSpecialReportsAddIndexImport } from './routes/_layout/research-reports/special-reports/add/index'
 import { Route as LayoutResearchReportsMutualFundReportsAddIndexImport } from './routes/_layout/research-reports/mutual-fund-reports/add/index'
@@ -175,6 +176,11 @@ const LayoutAcclAnnualReportsIndexRoute =
     getParentRoute: () => LayoutRoute,
   } as any)
 
+const LayoutUsersUserIdUpdateRoute = LayoutUsersUserIdUpdateImport.update({
+  path: '/users/$userId/update',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
 const LayoutResearchReportsWeeklyInsightsReportsAddIndexRoute =
   LayoutResearchReportsWeeklyInsightsReportsAddIndexImport.update({
     path: '/research-reports/weekly-insights-reports/add/',
@@ -313,6 +319,13 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/users'
       preLoaderRoute: typeof LayoutUsersIndexImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/users/$userId/update': {
+      id: '/_layout/users/$userId/update'
+      path: '/users/$userId/update'
+      fullPath: '/users/$userId/update'
+      preLoaderRoute: typeof LayoutUsersUserIdUpdateImport
       parentRoute: typeof LayoutImport
     }
     '/_layout/accl/annual-reports/': {
@@ -497,6 +510,7 @@ interface LayoutRouteChildren {
   LayoutIndexRoute: typeof LayoutIndexRoute
   LayoutFundTransferIndexRoute: typeof LayoutFundTransferIndexRoute
   LayoutUsersIndexRoute: typeof LayoutUsersIndexRoute
+  LayoutUsersUserIdUpdateRoute: typeof LayoutUsersUserIdUpdateRoute
   LayoutAcclAnnualReportsIndexRoute: typeof LayoutAcclAnnualReportsIndexRoute
   LayoutAcclFamiliarizationProgrammeReportsIndexRoute: typeof LayoutAcclFamiliarizationProgrammeReportsIndexRoute
   LayoutAcclInvestorRelationsReportsIndexRoute: typeof LayoutAcclInvestorRelationsReportsIndexRoute
@@ -532,6 +546,7 @@ const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutIndexRoute: LayoutIndexRoute,
   LayoutFundTransferIndexRoute: LayoutFundTransferIndexRoute,
   LayoutUsersIndexRoute: LayoutUsersIndexRoute,
+  LayoutUsersUserIdUpdateRoute: LayoutUsersUserIdUpdateRoute,
   LayoutAcclAnnualReportsIndexRoute: LayoutAcclAnnualReportsIndexRoute,
   LayoutAcclFamiliarizationProgrammeReportsIndexRoute:
     LayoutAcclFamiliarizationProgrammeReportsIndexRoute,
@@ -590,6 +605,7 @@ export interface FileRoutesByFullPath {
   '/test': typeof LayoutTestRoute
   '/fund-transfer': typeof LayoutFundTransferIndexRoute
   '/users': typeof LayoutUsersIndexRoute
+  '/users/$userId/update': typeof LayoutUsersUserIdUpdateRoute
   '/accl/annual-reports': typeof LayoutAcclAnnualReportsIndexRoute
   '/accl/familiarization-programme-reports': typeof LayoutAcclFamiliarizationProgrammeReportsIndexRoute
   '/accl/investor-relations-reports': typeof LayoutAcclInvestorRelationsReportsIndexRoute
@@ -625,6 +641,7 @@ export interface FileRoutesByTo {
   '/test': typeof LayoutTestRoute
   '/fund-transfer': typeof LayoutFundTransferIndexRoute
   '/users': typeof LayoutUsersIndexRoute
+  '/users/$userId/update': typeof LayoutUsersUserIdUpdateRoute
   '/accl/annual-reports': typeof LayoutAcclAnnualReportsIndexRoute
   '/accl/familiarization-programme-reports': typeof LayoutAcclFamiliarizationProgrammeReportsIndexRoute
   '/accl/investor-relations-reports': typeof LayoutAcclInvestorRelationsReportsIndexRoute
@@ -663,6 +680,7 @@ export interface FileRoutesById {
   '/_layout/': typeof LayoutIndexRoute
   '/_layout/fund-transfer/': typeof LayoutFundTransferIndexRoute
   '/_layout/users/': typeof LayoutUsersIndexRoute
+  '/_layout/users/$userId/update': typeof LayoutUsersUserIdUpdateRoute
   '/_layout/accl/annual-reports/': typeof LayoutAcclAnnualReportsIndexRoute
   '/_layout/accl/familiarization-programme-reports/': typeof LayoutAcclFamiliarizationProgrammeReportsIndexRoute
   '/_layout/accl/investor-relations-reports/': typeof LayoutAcclInvestorRelationsReportsIndexRoute
@@ -701,6 +719,7 @@ export interface FileRouteTypes {
     | '/test'
     | '/fund-transfer'
     | '/users'
+    | '/users/$userId/update'
     | '/accl/annual-reports'
     | '/accl/familiarization-programme-reports'
     | '/accl/investor-relations-reports'
@@ -735,6 +754,7 @@ export interface FileRouteTypes {
     | '/test'
     | '/fund-transfer'
     | '/users'
+    | '/users/$userId/update'
     | '/accl/annual-reports'
     | '/accl/familiarization-programme-reports'
     | '/accl/investor-relations-reports'
@@ -771,6 +791,7 @@ export interface FileRouteTypes {
     | '/_layout/'
     | '/_layout/fund-transfer/'
     | '/_layout/users/'
+    | '/_layout/users/$userId/update'
     | '/_layout/accl/annual-reports/'
     | '/_layout/accl/familiarization-programme-reports/'
     | '/_layout/accl/investor-relations-reports/'
@@ -838,6 +859,7 @@ export const routeTree = rootRoute
         "/_layout/",
         "/_layout/fund-transfer/",
         "/_layout/users/",
+        "/_layout/users/$userId/update",
         "/_layout/accl/annual-reports/",
         "/_layout/accl/familiarization-programme-reports/",
         "/_layout/accl/investor-relations-reports/",
@@ -894,6 +916,10 @@ export const routeTree = rootRoute
     },
     "/_layout/users/": {
       "filePath": "_layout/users/index.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/users/$userId/update": {
+      "filePath": "_layout/users/$userId/update.tsx",
       "parent": "/_layout"
     },
     "/_layout/accl/annual-reports/": {
