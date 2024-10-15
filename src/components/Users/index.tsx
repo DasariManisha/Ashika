@@ -105,11 +105,6 @@ const Users = () => {
       to: "/users/add",
     });
   };
-  const handleUpdate = (id: any) => {
-    navigate({
-      to: `/users/${id}/update`,
-    });
-  };
 
   const userActions = [
     {
@@ -127,12 +122,11 @@ const Users = () => {
             </Button>
             <Button
               title="Edit"
-              onClick={() => {
-                handleUpdate(info.row.original.id)
-                // navigate({
-                //   to:`/users/${info.row.original.id}/update`
-                // });
-              }}
+              onClick={() => 
+                navigate({
+                  to:`/users/${info.row.original.id}/update`
+                })
+              }
               size={"sm"}
               variant={"ghost"}
             >
