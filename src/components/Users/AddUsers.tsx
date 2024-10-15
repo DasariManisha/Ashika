@@ -1,4 +1,4 @@
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { Input } from "../ui/input";
@@ -8,9 +8,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { userTypes } from "@/utils/constants/userTyps";
 import { Check, ChevronDown, ChevronUp, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { addUsersAPI } from "@/utils/services/users";
+import { addUsersAPI, getSingleUserAPI } from "@/utils/services/users";
+import { errPopper } from "@/utils/helpers/errorPopper";
 
 interface ReportPayload {
   first_name: string;
@@ -22,6 +23,7 @@ interface ReportPayload {
 
 const AddUser = () => {
   const navigate = useNavigate();
+  const { userId } = useParams({ strict: false });
 
   const [userData, setUserData] = useState<any>({
     first_name: "",
@@ -65,6 +67,36 @@ const AddUser = () => {
     mutate(payload);
   };
 
+  const { isFetching } = useQuery({
+    queryKey: ["getSingleUser", userId],
+    queryFn: async () => {
+      if (!userId) return; // Early return if no userId
+
+      try {
+        const response = await getSingleUserAPI(userId);
+
+        if (response.success) {
+          const data = response?.data?.data;
+          setUserData({
+            first_name: data?.first_name,
+            last_name: data?.last_name,
+            email: data?.email,
+            password: data?.password,
+            designation: data?.designation,
+            user_type: data?.user_type
+          });
+          setUserType(data?.user_type);
+        } else {
+          throw response;
+        }
+      } catch (errData) {
+        console.error(errData);
+        errPopper(errData);
+      }
+    },
+    enabled: Boolean(userId),
+  });
+
   const handleInputChange = (e: any) => {
     let { name, value } = e.target;
     const updatedValue = value
@@ -97,7 +129,7 @@ const AddUser = () => {
 
   return (
     <Card className="p-6 max-w-lg mx-auto shadow-md">
-        <h1 className="text-2xl font-bold text-black-600 ml-2">Add User</h1>
+        <h1 className="text-2xl font-bold text-black-600 ml-2">{userId ? "Update User" : "Add User"}</h1>
       <Button
         variant="ghost"
         onClick={() =>
@@ -261,10 +293,10 @@ const AddUser = () => {
             Cancel
           </Button>
           <Button type="submit" onClick={addUser}>
-            Save
+            {userId ? "Update": "Add"}
           </Button>
         </div>
-        <Loading loading={isPending} label="" />
+        <Loading loading={isPending || isFetching} label="" />
       </div>
     </Card>
   );
