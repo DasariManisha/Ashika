@@ -9,17 +9,15 @@ import { CreateReportContext } from "../AddReports/CreateReportContext";
 
 const useUploadFileHook = ({ accept, setFileKey,type }: fileUploadProps) => {
 
-  const [selectedFiles, setSelectedFiles] = useState<fileDetail[]>([]);
   const [startUploading, setStartUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [preview, setPreview] = useState<string | null>(null);
 
   const context: CreateReportContextProps = useContext(
     CreateReportContext
   ) as CreateReportContextProps;
 
-  const { setLoading } = context;
+  const { setLoading,selectedFiles,setSelectedFiles,preview,setPreview } = context;
 
 
   const uploadFile = async (fileDetails: any, file: File) => {
@@ -62,21 +60,23 @@ const useUploadFileHook = ({ accept, setFileKey,type }: fileUploadProps) => {
     }
   };
 
-  const handleFileSelect = (e: any) => {
+  const handleFileSelect = (e: any,uploadType:string) => {
     const file = e.target.files[0];
     if (file) {
       const objectUrl = URL.createObjectURL(file);
-      setPreview(objectUrl);
+      if(uploadType == "thumbnailUpload"){
+        setPreview(objectUrl);
+      }
+      
     }
     const files = Array.from(e.target.files).map((file: any) => ({
       fileName: file.name,
       fileSize: (file.size / 1024).toFixed(2),
       fileType: file.type,
     }));
-    if (type == "import") {
-      setFileKey(file);
-      setSelectedFiles(files);
-    }else {
+    if(uploadType == "thumbnailUpload"){
+      uploadFile(files[0], file);
+    } else {
       uploadFile(files[0], file);
       setSelectedFiles(files);
     }
@@ -109,7 +109,7 @@ const useUploadFileHook = ({ accept, setFileKey,type }: fileUploadProps) => {
   const handleRemoveFile = (fileName: any) => {
     setStartUploading(false);
     setSelectedFiles(
-      selectedFiles.filter((file) => file.fileName !== fileName)
+      selectedFiles.filter((file: any) => file.fileName !== fileName)
     );
     setIsDragging(false);
     setFileKey('');
@@ -120,11 +120,10 @@ const useUploadFileHook = ({ accept, setFileKey,type }: fileUploadProps) => {
     handleFileDrop,
     handleDragOver,
     handleFileSelect,
-    selectedFiles,
     uploadSuccess,
     handleRemoveFile,
     isDragging,
-    preview
+    preview,
   };
 
 };

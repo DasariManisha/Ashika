@@ -16,11 +16,14 @@ const CategorySelect = () => {
     CreateReportContext
   ) as CreateReportContextProps;
 
-  const { handleCategory, errMessages, categories } = context;
+  const { handleCategory, errMessages, categories, reportsData } = context;
 
   return (
     <div>
-      <Select onValueChange={handleCategory}>
+      <Select
+        value={reportsData?.asset_category}
+        onValueChange={handleCategory}
+      >
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Select Category" />
         </SelectTrigger>

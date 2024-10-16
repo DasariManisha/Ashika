@@ -42,6 +42,15 @@ export const addReportsAPI = async (payload: any) => {
   }
 };
 
+export const updateReportsAPI = async (payload: any,id: string | undefined) => {
+  try {
+    // return await $fetch.get(`reports?page=${pageIndex}&limit=${pageSize}&report_group=${reportGroup}&report_type=${reportType}&category_type=${categoryType}`)
+    return await $fetch.patch(`/assets/${id}`, payload);
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const deleteReportAPI = async (id: number) => {
   try {
     return await $fetch.delete(`/assets/${id}`);
@@ -61,3 +70,22 @@ export const getReportCategoryAPI = async (asset_group: string,asset_type: strin
     throw err;
   }
 };
+
+export const getSingleReportAPI = async (reportId: string | undefined,) => {
+  const queryParams = {
+    metadata: true
+  }
+   try {
+     return await $fetch.get(`/assets/${reportId}`,queryParams);
+   } catch (err) {
+     throw err;
+   }
+ };
+
+ export const multipleDeleteReportsAPI = async (payload:any) => {
+  try {
+      return await $fetch.delete(`/assets/delete-multiple/new`, payload);
+  } catch (err) {
+      throw err
+  }
+}

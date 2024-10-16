@@ -6,7 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Card } from "../ui/card";
 import { Input } from "../ui/input";
-import Loading from "../core/CommonComponents/Loading";
+import Loading from "../core/Loading";
 
 const AddClient = () => {
   const navigate = useNavigate();

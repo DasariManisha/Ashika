@@ -1,54 +1,32 @@
 import { Button } from "@/components/ui/button";
+import { CreateReportContextProps } from "@/lib/interfaces/context";
 import { filePreviewAPI } from "@/lib/services/fileUpload";
 import Image from "next/image";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { CreateReportContext } from "../AddReports/CreateReportContext";
+import usePresignedUrlHook from "./usePresignedUrlHook";
 
 const PreviewFile = ({ info }: any) => {
   const [loading, setLoading] = useState(false);
 
-  const filePreview = async (fileKey: string) => {
-    setLoading(true);
-    try {
-      const payload = {
-        file_key: fileKey,
-      };
-      const response = await filePreviewAPI(payload);
+  const context: CreateReportContextProps = useContext(
+    CreateReportContext
+  ) as CreateReportContextProps;
 
-      if (response.status === 200 || response.status === 201) {
-        const url = response?.data?.data?.download_url;
-        window.open(url, "_blank", "noopener,noreferrer");
-        // await openFileInNewTab(url);
-      } else {
-        throw response;
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
+  const { setThumbnailKey, setPreview } = context;
+
+  const { filePreview } = usePresignedUrlHook();
+
+  const handleFilePreview = async (key: string) => {
+    const url = await filePreview(key);
+    window.open(url, "_blank", "noopener,noreferrer");
   };
-
-  //   const openFileInNewTab = async (fileUrl: string) => {
-  //     try {
-  //       const fileResponse = await fetch(fileUrl);
-  //       const blob = await fileResponse.blob();
-
-  //       const blobUrl = window.URL.createObjectURL(blob);
-  //       window.open(blobUrl, "_blank", "noopener,noreferrer");
-
-  //       setTimeout(() => {
-  //         window.URL.revokeObjectURL(blobUrl);
-  //       }, 100);
-  //     } catch (error) {
-  //       console.error("Error opening file in new tab:", error);
-  //     }
-  //   };
 
   return (
     <>
       <Button
         title="Preview"
-        onClick={() => filePreview(info.row.original.file_key)}
+        onClick={() => handleFilePreview(info.row.original.file_key)}
         size={"sm"}
         variant={"ghost"}
       >

@@ -27,19 +27,23 @@ const LoginComponent = () => {
   const { mutate, isError, error } = useMutation({
     mutationFn: async (loginDetails: loginProps) => {
       setLoading(true);
+
       try {
         const response = await loginAPI(loginDetails);
+
         if (response?.status === 200 || response?.status === 201) {
           toast.success(response?.data?.message);
           const { data } = response?.data;
           const { access_token } = data;
           const expirationDate = new Date();
-          expirationDate.setTime(expirationDate.getTime() + 30 * 10000);
+          expirationDate.setTime(expirationDate.getTime() + 300 * 10000);
           Cookies.set("token", access_token, {
             priority: "High",
             expires: expirationDate,
           });
+
           dispatch(setUserDetails(data));
+
           navigate({
             to: "/users",
           });

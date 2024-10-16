@@ -4,7 +4,7 @@ import {
   ReportDetailsProps,
   reportsDataProps,
 } from "@/lib/interfaces/context";
-import { addReportsAPI } from "@/utils/services/reports";
+import { addReportsAPI, updateReportsAPI } from "@/utils/services/reports";
 import { useMutation } from "@tanstack/react-query";
 import React, {
   createContext,
@@ -15,9 +15,11 @@ import React, {
   useEffect,
 } from "react";
 import dayjs from "dayjs";
-import { useNavigate, useRouter } from "@tanstack/react-router";
+import { useNavigate, useParams, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 import Loading from "../Loading";
+import { fileDetail } from "@/lib/interfaces/upload";
+import { report } from "process";
 
 const data = {
   title: "",
@@ -62,11 +64,17 @@ export const CreateReportContext = createContext<CreateReportContextProps>({
   categories: [],
   setCategories: () => [],
   isPending: false,
+  selectedFiles: [],
+  setSelectedFiles: () => [],
+  preview: "",
+  setPreview: () => {},
+  clearStates: () => {},
 });
 
 export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const navigate = useNavigate();
+  const { reportId } = useParams({ strict: false });
 
   const [reportsData, setReportsData] = useState<reportsDataProps>({
     title: "",
@@ -75,6 +83,8 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
     thumbnail_key: "",
     asset_category: "",
   });
+  const [selectedFiles, setSelectedFiles] = useState<fileDetail[]>([]);
+  const [preview, setPreview] = useState<string>("");
   const [fileKey, setFileKey] = useState("");
   const [assetGroup, setAssetGroup] = useState("");
   const [assetType, setAssetType] = useState("");
@@ -121,7 +131,7 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
     updateDate(selectedYear, month);
   };
 
-  const { mutate, isPending, isError, error, data, isSuccess } = useMutation({
+  const { mutate: createReport, isPending } = useMutation({
     mutationFn: async (payload: ReportPayload) => {
       return await addReportsAPI(payload);
     },
@@ -130,7 +140,36 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
         toast.success(response?.data?.message);
         clearStates();
         navigate({
-          to: `/${assetGroup}/${assetType}`,
+          to:
+            assetGroup === "downloads"
+              ? `/${assetGroup}`
+              : assetGroup === "margins"
+                ? `/margin-updates`
+                : `/${assetGroup}/${assetType}`,
+        });
+      }
+      if (response?.status === 422) {
+        setErrorMessages(response?.data?.errData || [""]);
+        toast.error(response?.data?.message);
+      }
+    },
+  });
+
+  const { mutate: updateReport, isPending: pending } = useMutation({
+    mutationFn: async (payload: ReportPayload) => {
+      return await updateReportsAPI(payload, reportId);
+    },
+    onSuccess: (response: any) => {
+      if (response?.status === 200 || response?.status === 201) {
+        toast.success(response?.data?.message);
+        clearStates();
+        navigate({
+          to:
+            assetGroup === "downloads"
+              ? `/${assetGroup}`
+              : assetGroup === "margins"
+                ? `/margin-updates`
+                : `/${assetGroup}/${assetType}`,
         });
       }
       if (response?.status === 422) {
@@ -151,11 +190,11 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
     });
     setFileKey("");
     setThumbnailKey("");
+    setSelectedCategory("");
+    setSelectedMonth("");
+    setSelectedYear("");
+    setSelectedFiles([]);
   };
-
-  useEffect(() => {
-    clearStates();
-  }, [router]);
 
   const addReport = ({
     asset_group,
@@ -178,7 +217,11 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
       }),
       ...(showThumbnail && { thumbnail_key: thumbnailKey }),
     };
-    mutate(payload);
+    if (reportId) {
+      updateReport(payload);
+    } else {
+      createReport(payload);
+    }
   };
 
   return (
@@ -208,6 +251,11 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
           categories,
           setCategories,
           isPending,
+          selectedFiles,
+          setSelectedFiles,
+          preview,
+          setPreview,
+          clearStates,
         }}
       >
         {children}

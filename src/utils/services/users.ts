@@ -27,12 +27,20 @@ export const getAllPaginatedUsers = async ({
 
 export const addUsersAPI = async (payload: any) => {
     try {
-        // return await $fetch.get(`reports?page=${pageIndex}&limit=${pageSize}&report_group=${reportGroup}&report_type=${reportType}&category_type=${categoryType}`)
         return await $fetch.post("/users", payload);
     } catch (err) {
         throw err
     }
     
+}
+
+export const updateUserAPI = async (payload: any) => {
+  try {
+      return await $fetch.patch("/users", payload);
+  } catch (err) {
+      throw err
+  }
+  
 }
 
 export const deleteUsersAPI = async (id:number) => {
@@ -42,3 +50,22 @@ export const deleteUsersAPI = async (id:number) => {
         throw err
     }
 }
+
+export const multipleDeleteUsersAPI = async (payload:any) => {
+  try {
+      return await $fetch.delete(`/delete-multiple/new`, payload);
+  } catch (err) {
+      throw err
+  }
+}
+
+export const getSingleUserAPI = async (userId: string | undefined,) => {
+  const queryParams = {
+    metadata: true
+  }
+   try {
+     return await $fetch.get(`/users/${userId}`,queryParams);
+   } catch (err) {
+     throw err;
+   }
+ };

@@ -13,12 +13,17 @@ import { CreateReportContext } from "./CreateReportContext";
 import { CreateReportContextProps } from "@/lib/interfaces/context";
 import FileUpload from "../CommonComponents/UploadPage";
 import ThumbnailPreview from "../CommonComponents/thumbnailUpload";
-import { createRouter, useRouter } from "@tanstack/react-router";
+import { createRouter, useParams, useRouter } from "@tanstack/react-router";
 import CategorySelect from "./Category";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { getReportCategoryAPI } from "@/utils/services/reports";
+import {
+  getReportCategoryAPI,
+  getSingleReportAPI,
+} from "@/utils/services/reports";
 import Loading from "../Loading";
+import { errPopper } from "@/utils/helpers/errorPopper";
+import usePresignedUrlHook from "../CommonComponents/usePresignedUrlHook";
 
 interface AddProps {
   showTitle?: boolean;
@@ -44,16 +49,31 @@ const CombineAdd = ({
   asset_category = "",
 }: AddProps) => {
   const router = useRouter();
-  // const navigate = useNavigate();
+  const { reportId } = useParams({ strict: false });
 
   const context: CreateReportContextProps = useContext(
     CreateReportContext
   ) as CreateReportContextProps;
 
-  const { loading, addReport, errMessages, setCategories, handleCategory } =
-    context as CreateReportContextProps;
+  const {
+    loading,
+    addReport,
+    errMessages,
+    setCategories,
+    handleCategory,
+    setReportsData,
+    setSelectedYear,
+    setSelectedMonth,
+    reportsData,
+    setSelectedFiles,
+    setFileKey,
+    setPreview,
+    clearStates,
+  } = context as CreateReportContextProps;
 
-  const { isLoading, isError, error, data, isFetching } = useQuery({
+  const { filePreview } = usePresignedUrlHook();
+
+  const { isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
       try {
@@ -68,17 +88,81 @@ const CombineAdd = ({
               ? setCategories(assetCategories)
               : handleCategory(assetCategories[0]);
           }
+          {
+            !reportId && clearStates();
+          }
         } else {
+          throw response;
         }
-      } catch {}
+      } catch (errData) {
+        console.error(errData);
+        errPopper(errData);
+      }
     },
   });
+
+  const getSingleReport = async () => {
+    try {
+      const response = await getSingleReportAPI(reportId);
+
+      if (response.success) {
+        const data = response?.data?.data;
+        setReportsData((prev) => ({
+          ...prev,
+          title: data?.title,
+          date: data?.date,
+          file_key: data?.file_key,
+          thumbnail_key: data?.thumbnail_key,
+          ...(data?.asset_metadata?.asset_category && {
+            asset_category: data?.asset_metadata?.asset_category,
+          }),
+        }));
+
+        setFileKey(data?.file_key);
+        assignDate(data?.date);
+        const file = {
+          fileName: data?.file_key,
+          fileSize: "",
+        };
+        setSelectedFiles([file]);
+        if (showThumbnail && data?.thumbnail_key) {
+          fetchThumbnailPreview(data);
+        }
+      } else {
+        throw response;
+      }
+    } catch (errData) {
+      console.error(errData);
+      errPopper(errData);
+    }
+  };
+
+  const { isFetching } = useQuery({
+    queryKey: ["getSingleReport", reportId],
+    queryFn: getSingleReport,
+    enabled: !!reportId,
+  });
+
+  const assignDate = (date: string) => {
+    setSelectedYear(dayjs(date).format("YYYY"));
+    setSelectedMonth(dayjs(date).format("MM"));
+  };
+
+  const fetchThumbnailPreview = async (data: any) => {
+    const url = await filePreview(data?.thumbnail_key);
+    setPreview(url);
+  };
+
+  const handleBack = () => {
+    clearStates();
+    window.history.back();
+  };
 
   return (
     <>
       <div className=" relative p-6  max-w-2xl mt-5 mx-auto bg-white rounded-xl shadow-md space-y-6">
         <Button
-          onClick={() => window.history.back()}
+          onClick={handleBack}
           variant="outline"
           className="flex items-center space-x-1 mb-4  h-[30px]"
         >
@@ -109,7 +193,7 @@ const CombineAdd = ({
         </div>
 
         <ActionButtons
-          onCancel={() => window.history.back()}
+          onCancel={handleBack}
           onSave={() =>
             addReport({
               asset_group,
@@ -121,7 +205,7 @@ const CombineAdd = ({
             })
           }
         />
-        <Loading loading={isLoading} />
+        <Loading loading={isLoading || isFetching} />
       </div>
     </>
   );
