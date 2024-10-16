@@ -11,3 +11,12 @@ export interface ReportProps {
     setDel: Dispatch<SetStateAction<number>>;
     setSelectedReports: Dispatch<SetStateAction<number[]>>;
   }
+
+  export interface IReportsFilters {
+    searchString: string;
+    setSearchString: Dispatch<SetStateAction<string>>;
+    // dateValue: [Date, Date] | null;
+    // onChangeData: (fromDate: string, toDate: string) => void;
+    // onChangeStatus: (statusValue: string) => void;
+    // status: string;
+  }

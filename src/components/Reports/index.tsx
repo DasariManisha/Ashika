@@ -2,7 +2,7 @@ import TanStackTable from "@/components/core/Table/TanstackTable";
 import { getAllPaginatedReports } from "@/utils/services/reports";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ReportColumns, ResponseDataType } from "./reportColumns";
 import Loading from "../core/Loading";
 import { Button } from "../ui/button";
@@ -13,6 +13,7 @@ import DeleteResearchReports from "../core/CommonComponents/DeleteResearchReport
 import { Checkbox } from "../ui/checkbox";
 import DeleteMultipleReports from "../core/CommonComponents/DeleteMultipleReports";
 import { ReportProps } from "@/lib/interfaces/report";
+import ReportsFilters from "./ReportsFilters";
 
 const Reports: React.FC<ReportProps> = ({
   asset_group,
@@ -27,6 +28,7 @@ const Reports: React.FC<ReportProps> = ({
 
   const pageIndexParam = Number(searchParams.get("current_page")) || 1;
   const pageSizeParam = Number(searchParams.get("page_size")) || 10;
+  const [searchString, setSearchString] = useState("");
   const [selectedReports, setSelectedReports] = useState<number[]>([]);
   const orderBY = searchParams.get("order_by")
     ? searchParams.get("order_by")
@@ -35,6 +37,7 @@ const Reports: React.FC<ReportProps> = ({
     pageIndex: pageIndexParam,
     pageSize: pageSizeParam,
     order_by: orderBY,
+    search_string: searchParams.get("search_string"),
   });
 
   const [del, setDel] = useState(1);
@@ -45,6 +48,7 @@ const Reports: React.FC<ReportProps> = ({
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         order_by: pagination.order_by,
+        search_string: searchParams.get("search_string"),
         asset_group,
         asset_type,
         asset_category,
@@ -67,8 +71,13 @@ const Reports: React.FC<ReportProps> = ({
     },
   });
 
-  const getAllReports = async ({ pageIndex, pageSize, order_by }: any) => {
-    setPagination({ pageIndex, pageSize, order_by });
+  const getAllReports = async ({
+    pageIndex,
+    pageSize,
+    order_by,
+    search_string,
+  }: any) => {
+    setPagination({ pageIndex, pageSize, order_by, search_string });
   };
   const paginationInfo = data?.data?.data?.pagination_info;
   const records = data?.data?.data?.records;
@@ -164,9 +173,29 @@ const Reports: React.FC<ReportProps> = ({
       footer: (info) => info.column.id,
     }),
   ];
+  console.log(searchString, "searchString");
+
+  useEffect(() => {
+    let debounce = setTimeout(() => {
+      getAllPaginatedReports({
+        search_string: searchString,
+        pageIndex: 1,
+        asset_group,
+        asset_type,
+        asset_category,
+      });
+      setDel((prev) => prev + 1);
+    }, 500);
+    return () => clearTimeout(debounce);
+  }, []);
+
   return (
     <div className="relative">
       <div className="flex justify-end mb-4 gap-4">
+        <ReportsFilters
+          searchString={searchString}
+          setSearchString={setSearchString}
+        />
         <DeleteMultipleReports
           selectedReports={selectedReports}
           setDel={setDel}
