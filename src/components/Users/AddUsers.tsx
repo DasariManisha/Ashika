@@ -10,7 +10,11 @@ import { Check, ChevronDown, ChevronUp, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { addUsersAPI, getSingleUserAPI, updateUserAPI } from "@/utils/services/users";
+import {
+  addUsersAPI,
+  getSingleUserAPI,
+  updateUserAPI,
+} from "@/utils/services/users";
 import { errPopper } from "@/utils/helpers/errorPopper";
 
 interface ReportPayload {
@@ -38,10 +42,10 @@ const AddUser = () => {
 
   const { mutate, isPending, isError, error, data, isSuccess } = useMutation({
     mutationFn: async (payload: ReportPayload) => {
-      if(userId) {
-        return await updateUserAPI(payload);
-      }else {
-      return await addUsersAPI(payload);
+      if (userId) {
+        return await updateUserAPI(payload, userId);
+      } else {
+        return await addUsersAPI(payload);
       }
     },
     onSuccess: (response: any) => {
@@ -57,7 +61,6 @@ const AddUser = () => {
       }
     },
   });
-  
 
   const addUser = () => {
     const payload = {
@@ -87,7 +90,7 @@ const AddUser = () => {
             email: data?.email,
             password: data?.password,
             designation: data?.designation,
-            user_type: data?.user_type
+            user_type: data?.user_type,
           });
           setUserType(data?.user_type);
         } else {
@@ -133,7 +136,9 @@ const AddUser = () => {
 
   return (
     <Card className="p-6 max-w-lg mx-auto shadow-md">
-        <h1 className="text-2xl font-bold text-black-600 ml-2">{userId ? "Update User" : "Add User"}</h1>
+      <h1 className="text-2xl font-bold text-black-600 ml-2">
+        {userId ? "Update User" : "Add User"}
+      </h1>
       <Button
         variant="ghost"
         onClick={() =>
@@ -193,21 +198,25 @@ const AddUser = () => {
             <p style={{ color: "red" }}>{errorMessages.email[0]}</p>
           )}
         </div>
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium">
-            Password<span className="text-red-500">*</span>
-          </label>
-          <Input
-            id="password"
-            placeholder="Enter Password"
-            value={userData.password}
-            name="password"
-            onChange={handleChangePassword}
-          />
-          {errorMessages?.password && (
-            <p style={{ color: "red" }}>{errorMessages.password[0]}</p>
-          )}
-        </div>
+        {!userId ? (
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium">
+              Password<span className="text-red-500">*</span>
+            </label>
+            <Input
+              id="password"
+              placeholder="Enter Password"
+              value={userData.password}
+              name="password"
+              onChange={handleChangePassword}
+            />
+            {errorMessages?.password && (
+              <p style={{ color: "red" }}>{errorMessages.password[0]}</p>
+            )}
+          </div>
+        ) : (
+          ""
+        )}
         <div>
           <label htmlFor="designation" className="block text-sm font-medium">
             Designation<span className="text-red-500">*</span>
@@ -297,7 +306,7 @@ const AddUser = () => {
             Cancel
           </Button>
           <Button type="submit" onClick={addUser}>
-            {userId ? "Update": "Add"}
+            {userId ? "Update" : "Add"}
           </Button>
         </div>
         <Loading loading={isPending || isFetching} label="" />
