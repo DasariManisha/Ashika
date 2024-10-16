@@ -38,6 +38,7 @@ import { Route as LayoutAcclPoliciesReportsIndexImport } from './routes/_layout/
 import { Route as LayoutAcclInvestorRelationsReportsIndexImport } from './routes/_layout/accl/investor-relations-reports/index'
 import { Route as LayoutAcclFamiliarizationProgrammeReportsIndexImport } from './routes/_layout/accl/familiarization-programme-reports/index'
 import { Route as LayoutAcclAnnualReportsIndexImport } from './routes/_layout/accl/annual-reports/index'
+import { Route as LayoutUsersUserIdUpdateImport } from './routes/_layout/users/$userId/update'
 import { Route as LayoutMarginUpdatesReportIdUpdateImport } from './routes/_layout/margin-updates/$reportId/update'
 import { Route as LayoutDownloadsReportIdUpdateImport } from './routes/_layout/downloads/$reportId/update'
 import { Route as LayoutResearchReportsWeeklyInsightsReportsAddIndexImport } from './routes/_layout/research-reports/weekly-insights-reports/add/index'
@@ -212,6 +213,11 @@ const LayoutAcclAnnualReportsIndexRoute =
     path: '/accl/annual-reports/',
     getParentRoute: () => LayoutRoute,
   } as any)
+
+const LayoutUsersUserIdUpdateRoute = LayoutUsersUserIdUpdateImport.update({
+  path: '/users/$userId/update',
+  getParentRoute: () => LayoutRoute,
+} as any)
 
 const LayoutMarginUpdatesReportIdUpdateRoute =
   LayoutMarginUpdatesReportIdUpdateImport.update({
@@ -457,6 +463,13 @@ declare module '@tanstack/react-router' {
       path: '/margin-updates/$reportId/update'
       fullPath: '/margin-updates/$reportId/update'
       preLoaderRoute: typeof LayoutMarginUpdatesReportIdUpdateImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/users/$userId/update': {
+      id: '/_layout/users/$userId/update'
+      path: '/users/$userId/update'
+      fullPath: '/users/$userId/update'
+      preLoaderRoute: typeof LayoutUsersUserIdUpdateImport
       parentRoute: typeof LayoutImport
     }
     '/_layout/accl/annual-reports/': {
@@ -734,6 +747,7 @@ interface LayoutRouteChildren {
   LayoutUsersIndexRoute: typeof LayoutUsersIndexRoute
   LayoutDownloadsReportIdUpdateRoute: typeof LayoutDownloadsReportIdUpdateRoute
   LayoutMarginUpdatesReportIdUpdateRoute: typeof LayoutMarginUpdatesReportIdUpdateRoute
+  LayoutUsersUserIdUpdateRoute: typeof LayoutUsersUserIdUpdateRoute
   LayoutAcclAnnualReportsIndexRoute: typeof LayoutAcclAnnualReportsIndexRoute
   LayoutAcclFamiliarizationProgrammeReportsIndexRoute: typeof LayoutAcclFamiliarizationProgrammeReportsIndexRoute
   LayoutAcclInvestorRelationsReportsIndexRoute: typeof LayoutAcclInvestorRelationsReportsIndexRoute
@@ -785,6 +799,7 @@ const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutDownloadsReportIdUpdateRoute: LayoutDownloadsReportIdUpdateRoute,
   LayoutMarginUpdatesReportIdUpdateRoute:
     LayoutMarginUpdatesReportIdUpdateRoute,
+  LayoutUsersUserIdUpdateRoute: LayoutUsersUserIdUpdateRoute,
   LayoutAcclAnnualReportsIndexRoute: LayoutAcclAnnualReportsIndexRoute,
   LayoutAcclFamiliarizationProgrammeReportsIndexRoute:
     LayoutAcclFamiliarizationProgrammeReportsIndexRoute,
@@ -871,6 +886,7 @@ export interface FileRoutesByFullPath {
   '/users': typeof LayoutUsersIndexRoute
   '/downloads/$reportId/update': typeof LayoutDownloadsReportIdUpdateRoute
   '/margin-updates/$reportId/update': typeof LayoutMarginUpdatesReportIdUpdateRoute
+  '/users/$userId/update': typeof LayoutUsersUserIdUpdateRoute
   '/accl/annual-reports': typeof LayoutAcclAnnualReportsIndexRoute
   '/accl/familiarization-programme-reports': typeof LayoutAcclFamiliarizationProgrammeReportsIndexRoute
   '/accl/investor-relations-reports': typeof LayoutAcclInvestorRelationsReportsIndexRoute
@@ -923,6 +939,7 @@ export interface FileRoutesByTo {
   '/users': typeof LayoutUsersIndexRoute
   '/downloads/$reportId/update': typeof LayoutDownloadsReportIdUpdateRoute
   '/margin-updates/$reportId/update': typeof LayoutMarginUpdatesReportIdUpdateRoute
+  '/users/$userId/update': typeof LayoutUsersUserIdUpdateRoute
   '/accl/annual-reports': typeof LayoutAcclAnnualReportsIndexRoute
   '/accl/familiarization-programme-reports': typeof LayoutAcclFamiliarizationProgrammeReportsIndexRoute
   '/accl/investor-relations-reports': typeof LayoutAcclInvestorRelationsReportsIndexRoute
@@ -978,6 +995,7 @@ export interface FileRoutesById {
   '/_layout/users/': typeof LayoutUsersIndexRoute
   '/_layout/downloads/$reportId/update': typeof LayoutDownloadsReportIdUpdateRoute
   '/_layout/margin-updates/$reportId/update': typeof LayoutMarginUpdatesReportIdUpdateRoute
+  '/_layout/users/$userId/update': typeof LayoutUsersUserIdUpdateRoute
   '/_layout/accl/annual-reports/': typeof LayoutAcclAnnualReportsIndexRoute
   '/_layout/accl/familiarization-programme-reports/': typeof LayoutAcclFamiliarizationProgrammeReportsIndexRoute
   '/_layout/accl/investor-relations-reports/': typeof LayoutAcclInvestorRelationsReportsIndexRoute
@@ -1033,6 +1051,7 @@ export interface FileRouteTypes {
     | '/users'
     | '/downloads/$reportId/update'
     | '/margin-updates/$reportId/update'
+    | '/users/$userId/update'
     | '/accl/annual-reports'
     | '/accl/familiarization-programme-reports'
     | '/accl/investor-relations-reports'
@@ -1084,6 +1103,7 @@ export interface FileRouteTypes {
     | '/users'
     | '/downloads/$reportId/update'
     | '/margin-updates/$reportId/update'
+    | '/users/$userId/update'
     | '/accl/annual-reports'
     | '/accl/familiarization-programme-reports'
     | '/accl/investor-relations-reports'
@@ -1137,6 +1157,7 @@ export interface FileRouteTypes {
     | '/_layout/users/'
     | '/_layout/downloads/$reportId/update'
     | '/_layout/margin-updates/$reportId/update'
+    | '/_layout/users/$userId/update'
     | '/_layout/accl/annual-reports/'
     | '/_layout/accl/familiarization-programme-reports/'
     | '/_layout/accl/investor-relations-reports/'
@@ -1225,6 +1246,7 @@ export const routeTree = rootRoute
         "/_layout/users/",
         "/_layout/downloads/$reportId/update",
         "/_layout/margin-updates/$reportId/update",
+        "/_layout/users/$userId/update",
         "/_layout/accl/annual-reports/",
         "/_layout/accl/familiarization-programme-reports/",
         "/_layout/accl/investor-relations-reports/",
@@ -1308,6 +1330,10 @@ export const routeTree = rootRoute
     },
     "/_layout/margin-updates/$reportId/update": {
       "filePath": "_layout/margin-updates/$reportId/update.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/users/$userId/update": {
+      "filePath": "_layout/users/$userId/update.tsx",
       "parent": "/_layout"
     },
     "/_layout/accl/annual-reports/": {
