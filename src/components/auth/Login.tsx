@@ -11,7 +11,7 @@ import Cookies from "js-cookie";
 import { setUserDetails } from "@/redux/Modules/userlogin";
 import { toast } from "sonner";
 import Loading from "../core/CommonComponents/Loading";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { errPopper } from "@/utils/helpers/errorPopper";
 interface loginProps {
   email: string;
@@ -125,9 +125,19 @@ const LoginComponent = () => {
               <p style={{ color: "red" }}>{errors?.password[0]}</p>
             )}
           </div>
-          {/* <div className="self-end font-light text-md text-red-500 underline cursor-pointer">
-            Forgot Password?
-          </div> */}
+          <Link
+                to="/forgot-password"
+                activeProps={{
+                  className: "bg-blue-900 text-white",
+                }}
+                activeOptions={{ exact: true }}
+              >
+                 <div className="flex flex-col">
+                    <span  className="text-blue-500 hover:text-blue-700">
+                      <sub>Forgot Password?</sub>
+                    </span>
+                  </div>
+              </Link>
           <Button
             type="submit"
             className="w-full flex justify-center items-center"
