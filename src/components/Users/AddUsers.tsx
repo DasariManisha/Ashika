@@ -63,15 +63,27 @@ const AddUser = () => {
   });
 
   const addUser = () => {
-    const payload = {
-      first_name: userData?.first_name,
-      last_name: userData?.last_name,
-      email: userData?.email,
-      password: userData?.password,
-      designation: userData?.designation,
-      user_type: userType,
-    };
-    mutate(payload);
+    if (userId) {
+      const payload: any = {
+        first_name: userData?.first_name,
+        last_name: userData?.last_name,
+        email: userData?.email,
+        designation: userData?.designation,
+        user_type: userType,
+        profile_pic: null,
+      };
+      mutate(payload);
+    } else {
+      const payload = {
+        first_name: userData?.first_name,
+        last_name: userData?.last_name,
+        email: userData?.email,
+        password: userData?.password,
+        designation: userData?.designation,
+        user_type: userType,
+      };
+      mutate(payload);
+    }
   };
 
   const { isFetching } = useQuery({
