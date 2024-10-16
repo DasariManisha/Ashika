@@ -68,6 +68,7 @@ const CombineAdd = ({
     setSelectedFiles,
     setFileKey,
     setPreview,
+    clearStates,
   } = context as CreateReportContextProps;
 
   const { filePreview } = usePresignedUrlHook();
@@ -86,6 +87,9 @@ const CombineAdd = ({
             assetCategories.length > 1
               ? setCategories(assetCategories)
               : handleCategory(assetCategories[0]);
+          }
+          {
+            !reportId && clearStates();
           }
         } else {
           throw response;
@@ -149,11 +153,16 @@ const CombineAdd = ({
     setPreview(url);
   };
 
+  const handleBack = () => {
+    clearStates();
+    window.history.back();
+  };
+
   return (
     <>
       <div className=" relative p-6  max-w-2xl mt-5 mx-auto bg-white rounded-xl shadow-md space-y-6">
         <Button
-          onClick={() => window.history.back()}
+          onClick={handleBack}
           variant="outline"
           className="flex items-center space-x-1 mb-4  h-[30px]"
         >
@@ -184,7 +193,7 @@ const CombineAdd = ({
         </div>
 
         <ActionButtons
-          onCancel={() => window.history.back()}
+          onCancel={handleBack}
           onSave={() =>
             addReport({
               asset_group,

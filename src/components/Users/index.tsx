@@ -5,7 +5,11 @@ import { useState } from "react";
 import Loading from "../core/Loading";
 import { Button } from "../ui/button";
 import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
-import { deleteUsersAPI, getAllPaginatedUsers, multipleDeleteUsersAPI } from "@/utils/services/users";
+import {
+  deleteUsersAPI,
+  getAllPaginatedUsers,
+  multipleDeleteUsersAPI,
+} from "@/utils/services/users";
 import { userColumns as baseUserColumns } from "./UserColumns";
 import { addSerial } from "@/lib/helpers/addSerial";
 import { toast } from "sonner";
@@ -31,7 +35,7 @@ const Users = () => {
   const [del, setDel] = useState(1);
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
 
-  const [pagination, setPagination] = useState<PaginationState>({
+  const [pagination, setPagination] = useState({
     pageIndex: pageIndexParam,
     pageSize: pageSizeParam,
     order_by: orderBY,
@@ -67,6 +71,8 @@ const Users = () => {
       data?.data?.data?.pagination_info?.page_size
     ) || [];
 
+  console.log(usersData, "usersData");
+
   const getAllUsers = async ({ pageIndex, pageSize, order_by }: any) => {
     setPagination({ pageIndex, pageSize, order_by });
   };
@@ -77,11 +83,6 @@ const Users = () => {
       const response = await deleteUsersAPI(deleteId);
       if (response?.status === 200 || response?.status === 201) {
         toast.success(response?.data?.message || "User Deleted Successfully");
-        getAllPaginatedUsers({
-          pageIndex: pagination.pageIndex,
-          pageSize: pagination.pageSize,
-          order_by: pagination.order_by,
-        });
         setDel((prev) => prev + 1);
         onClickClose();
       }
@@ -97,16 +98,11 @@ const Users = () => {
     try {
       setDeleteLoading(true);
       let payload = {
-        ids: selectedUsers
-      }
+        ids: selectedUsers,
+      };
       const response = await multipleDeleteUsersAPI(payload);
       if (response?.status === 200 || response?.status === 201) {
         toast.success(response?.data?.message || "Users Deleted Successfully");
-        getAllPaginatedUsers({
-          pageIndex: pagination.pageIndex,
-          pageSize: pagination.pageSize,
-          order_by: pagination.order_by,
-        });
         setDel((prev) => prev + 1);
         onClickClose();
       }
@@ -255,21 +251,21 @@ const Users = () => {
           </div>
         )}
         {deleteOpen == true ? (
-        <DeleteDialog
-          openOrNot={deleteOpen}
-          label="Are you sure you want to Delete this users?"
-          onCancelClick={onClickDeleteClose}
-          onOKClick={deleteUsers}
-          deleteLoading={deleteLoading}
-        />
+          <DeleteDialog
+            openOrNot={deleteOpen}
+            label="Are you sure you want to Delete this users?"
+            onCancelClick={onClickDeleteClose}
+            onOKClick={deleteUsers}
+            deleteLoading={deleteLoading}
+          />
         ) : (
           <DeleteDialog
-          openOrNot={open}
-          label="Are you sure you want to Delete this user?"
-          onCancelClick={onClickClose }
-          onOKClick={deleteClient}
-          deleteLoading={deleteLoading}
-        />
+            openOrNot={open}
+            label="Are you sure you want to Delete this user?"
+            onCancelClick={onClickClose}
+            onOKClick={deleteClient}
+            deleteLoading={deleteLoading}
+          />
         )}
         <Loading loading={isLoading || isFetching} />
       </div>

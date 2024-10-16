@@ -81,3 +81,11 @@ export const getSingleReportAPI = async (reportId: string | undefined,) => {
      throw err;
    }
  };
+
+ export const multipleDeleteReportsAPI = async (payload:any) => {
+  try {
+      return await $fetch.delete(`/assets/delete-multiple/new`, payload);
+  } catch (err) {
+      throw err
+  }
+}

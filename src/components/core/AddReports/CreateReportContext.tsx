@@ -68,6 +68,7 @@ export const CreateReportContext = createContext<CreateReportContextProps>({
   setSelectedFiles: () => [],
   preview: "",
   setPreview: () => {},
+  clearStates: () => {},
 });
 
 export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
@@ -189,11 +190,11 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
     });
     setFileKey("");
     setThumbnailKey("");
+    setSelectedCategory("");
+    setSelectedMonth("");
+    setSelectedYear("");
+    setSelectedFiles([]);
   };
-
-  useEffect(() => {
-    clearStates();
-  }, [router]);
 
   const addReport = ({
     asset_group,
@@ -254,6 +255,7 @@ export const CreateReportProvider = ({ children }: { children: ReactNode }) => {
           setSelectedFiles,
           preview,
           setPreview,
+          clearStates,
         }}
       >
         {children}
