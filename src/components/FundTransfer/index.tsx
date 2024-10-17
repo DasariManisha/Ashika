@@ -120,8 +120,6 @@ const FundTransfer = () => {
   const getAllClients = async ({ pageIndex, pageSize, order_by }: any) => {
     setPagination({ pageIndex, pageSize, order_by });
   };
-  console.log(data,"data")
-  console.log(clientsData,"clientsData")
 
   const deleteClient = async () => {
     try {
