@@ -88,59 +88,67 @@ function ResetPassword() {
           />
         </div>
         <form className="w-full" onSubmit={handleSubmit}>
-        <div className="flex flex-col space-y-4 w-full">
-        <div className="flex flex-col space-y-0.5 w-full">
-            <Label className="font-normal uppercase text-lg" htmlFor="newpassword">
-              New Password
-            </Label>
-            <Input
-              className="appearance-none block py-1 h-12 text-lg rounded-none focus:outline-none focus:border-gray-500 focus-visible:ring-0 focus-visible:shadow-none"
-              id="newpassword"
-              placeholder="New Password"
-              onChange={(e) =>
-                setResetDetails({
-                  ...resetDetails,
-                  new_password: e.target.value,
-                })
-              }
-            />
-            {errors?.new_password && (
-              <p style={{ color: "red" }}>{errors?.new_password[0]}</p>
-            )}
-          </div>
-          <div className="flex flex-col space-y-0.5 w-full">
-            <Label className="font-normal uppercase text-lg" htmlFor="confirm_new_password">
-              Re-Enter Password
-            </Label>
-            <Input
-              className="appearance-none block py-1 h-12 text-lg rounded-none focus:outline-none focus:border-gray-500 focus-visible:ring-0 focus-visible:shadow-none"
-              id="newpassword"
-              placeholder="New Password"
-              onChange={(e) =>
-                setResetDetails({
-                  ...resetDetails,
-                  confirm_new_password: e.target.value,
-                })
-              }
-            />
-            {errors?. confirm_new_password&& (
-              <p style={{ color: "red" }}>{errors?.confirm_new_password[0]}</p>
-            )}
-          </div>
+          <div className="flex flex-col space-y-4 w-full">
+            <div className="flex flex-col space-y-0.5 w-full">
+              <Label
+                className="font-normal capitalize text-lg"
+                htmlFor="newpassword"
+              >
+                New Password
+              </Label>
+              <Input
+                className="appearance-none block py-1 h-12 text-lg rounded-none focus:outline-none focus:border-gray-500 focus-visible:ring-0 focus-visible:shadow-none"
+                id="newpassword"
+                placeholder="New Password"
+                onChange={(e) =>
+                  setResetDetails({
+                    ...resetDetails,
+                    new_password: e.target.value,
+                  })
+                }
+              />
+              {errors?.new_password && (
+                <p style={{ color: "red" }}>{errors?.new_password[0]}</p>
+              )}
+            </div>
+            <div className="flex flex-col space-y-0.5 w-full">
+              <Label
+                className="font-normal capitalize text-lg"
+                htmlFor="confirm_new_password"
+              >
+                Re-Enter Password
+              </Label>
+              <Input
+                className="appearance-none block py-1 h-12 text-lg rounded-none focus:outline-none focus:border-gray-500 focus-visible:ring-0 focus-visible:shadow-none"
+                id="newpassword"
+                placeholder="New Password"
+                onChange={(e) =>
+                  setResetDetails({
+                    ...resetDetails,
+                    confirm_new_password: e.target.value,
+                  })
+                }
+              />
+              {errors?.confirm_new_password && (
+                <p style={{ color: "red" }}>
+                  {errors?.confirm_new_password[0]}
+                </p>
+              )}
+            </div>
           </div>
           <div className="mt-4">
-          <Button
-            type="submit"
-            className="w-full flex justify-center items-center"
-          >
-            {loading ? (
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-            ) : (
-              "Recover Account"
-            )}
-          </Button>
+            <Button
+              type="submit"
+              className="w-full flex justify-center items-center"
+            >
+              {loading ? (
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              ) : (
+                "Recover Account"
+              )}
+            </Button>
           </div>
-        </form> 
+        </form>
       </div>
       {/* <Loading loading={loading} /> */}
     </div>
