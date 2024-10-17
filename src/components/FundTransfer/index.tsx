@@ -3,15 +3,15 @@ import { Button } from "@/components/ui/button";
 import { addSerial } from "@/lib/helpers/addSerial";
 import { prepareQueryParams } from "@/lib/helpers/prepareQueryParams";
 import prepareURLEncodedParams from "@/lib/helpers/prepareURLEncodedParams";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import TanStackTable from "../core/Table/TanstackTable";
 import { fundTransferColumns } from "./FundTransferColumns";
-import { useLocation, useNavigate } from "@tanstack/react-router";
+import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
 import {
   deleteClientAPI,
-  getAllFundTransferAPI,
+  getAllPaginatedClients,
   getExportDpClientsAPI,
   importClientAPI,
 } from "@/utils/services/fundTransfer";
@@ -23,12 +23,19 @@ import Loading from "../core/Loading";
 
 const FundTransfer = () => {
   const navigate = useNavigate();
+  const router = useRouter();
   const location = useLocation();
   const searchParams = new URLSearchParams(location?.search);
+  const pageIndexParam = Number(searchParams.get("current_page")) || 1;
+  const pageSizeParam = Number(searchParams.get("page_size")) || 10;
+  const orderBY = searchParams.get("order_by")
+    ? searchParams.get("order_by")
+    : "";
+  const initialSearch = searchParams.get("search") || "";
   const [fundTransferData, setFundTransferData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [paginationDetails, setPaginationDetails] = useState({});
-  const [searchString, setSearchString] = useState("");
+  const [searchString, setSearchString] = useState(initialSearch);
   const [fileUpload, setFileUpload] = useState<any>();
   const [exportData, setExportData] = useState<any>(null);
   const [open, setOpen] = useState(false);
@@ -37,37 +44,84 @@ const FundTransfer = () => {
   const [exportLoading, setExportLoading] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
+  const [debouncedSearch, setDebouncedSearch] = useState(searchString);
+  const [del, setDel] = useState(1);
 
-  const getAllFundTransfer = async ({
-    page = searchParams.get("page") as string,
-    limit = searchParams.get("limit") as string,
-    // sort_by = location?.search?.sort_by as string,
-    // sort_type = location?.search?.sort_type as string,
-  }: any) => {
-    setLoading(true);
-    let queryParams = prepareQueryParams({
-      page: page ? page : 1,
-      limit: limit ? limit : 10,
-    });
+  const [pagination, setPagination] = useState({
+    pageIndex: pageIndexParam,
+    pageSize: pageSizeParam,
+    order_by: orderBY,
+  });
 
-    let querySting = prepareURLEncodedParams("", queryParams);
-    navigate({
-      to: `${location?.pathname}${querySting}`,
-    });
-    try {
-      const response = await getAllFundTransferAPI(queryParams);
-      if (response?.success) {
-        let { data, ...rest } = response?.data?.data;
-        data = addSerial(data, rest.page, rest.limit);
-        setFundTransferData(data);
-        setPaginationDetails(rest);
-      }
-    } catch (err) {
-      console.error("Error fetching files:", err);
-    } finally {
-      setLoading(false);
-    }
+
+  const { isLoading, isError, error, data, isFetching } = useQuery({
+    queryKey: ["clients", pagination, del, debouncedSearch],
+    queryFn: async () => {
+      const response = await getAllPaginatedClients({
+        pageIndex: pagination.pageIndex,
+        pageSize: pagination.pageSize,
+        order_by: pagination.order_by,
+        search: debouncedSearch,
+      });
+
+      const queryParams: Record<string, any> = {
+        current_page: pagination.pageIndex,
+        page_size: pagination.pageSize,
+        order_by: pagination.order_by || undefined,
+        search: debouncedSearch || undefined,
+      };
+      router.navigate({
+        to: "/fund-transfer",
+        search: queryParams,
+      });
+
+      return response;
+    },
+  });
+
+  // const getAllFundTransfer = async ({
+  //   page = searchParams.get("page") as string,
+  //   limit = searchParams.get("limit") as string,
+  //   // sort_by = location?.search?.sort_by as string,
+  //   // sort_type = location?.search?.sort_type as string,
+  // }: any) => {
+  //   setLoading(true);
+  //   let queryParams = prepareQueryParams({
+  //     page: page ? page : 1,
+  //     limit: limit ? limit : 10,
+  //   });
+
+  //   let querySting = prepareURLEncodedParams("", queryParams);
+  //   navigate({
+  //     to: `${location?.pathname}${querySting}`,
+  //   });
+  //   try {
+  //     const response = await getAllFundTransferAPI(queryParams);
+  //     if (response?.success) {
+  //       let { data, ...rest } = response?.data?.data;
+  //       data = addSerial(data, rest.page, rest.limit);
+  //       setFundTransferData(data);
+  //       setPaginationDetails(rest);
+  //     }
+  //   } catch (err) {
+  //     console.error("Error fetching files:", err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const clientsData =
+    addSerial(
+      data?.data?.data?.data,
+      data?.data?.data?.page,
+      data?.data?.data?.limit
+    ) || [];
+
+  const getAllClients = async ({ pageIndex, pageSize, order_by }: any) => {
+    setPagination({ pageIndex, pageSize, order_by });
   };
+  console.log(data,"data")
+  console.log(clientsData,"clientsData")
 
   const deleteClient = async () => {
     try {
@@ -77,7 +131,7 @@ const FundTransfer = () => {
         toast.success(
           response?.data?.message || "Dp Client Deleted Successfully"
         );
-        getAllFundTransfer({});
+        setDel((prev) => prev + 1);
         onClickClose();
       }
     } catch (err: any) {
@@ -126,7 +180,7 @@ const FundTransfer = () => {
       if (response.status === 200 || response.status === 201) {
         toast.success("Dp clients imported successfully");
         setUploadOpen(false);
-        getAllFundTransfer({});
+        setDel((prev) => prev + 1);
       } else {
         throw response;
       }
@@ -154,14 +208,15 @@ const FundTransfer = () => {
     setUploadOpen(false);
   };
 
-  const { isLoading, isError, error, data, isFetching } = useQuery({
-    queryKey: ["projects"],
-    queryFn: async () =>
-      await getAllFundTransfer({
-        // page: 1,
-        // limit: 10,
-      }),
-  });
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchString);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchString]);
 
   const fundTransferActions = [
     {
@@ -226,7 +281,10 @@ const FundTransfer = () => {
           Import Client
         </Button>
         <Button className="bg-[#e11d48] text-white">select</Button>
-        <SearchFilter searchString={searchString} />
+        <SearchFilter
+          searchString={searchString}
+          setSearchString={setSearchString}
+        />
         <Button
           className="bg-[#1e3a8a] text-white"
           onClick={() =>
@@ -238,16 +296,20 @@ const FundTransfer = () => {
           Add Client
         </Button>
       </div>
+      {isError ? (
+          <div>Error: {error.message}</div>
+        ) : (
       <div className="ml-5 ">
         <TanStackTable
           columns={[...fundTransferColumns, ...fundTransferActions]}
-          data={fundTransferData}
+          data={clientsData}
           loading={false}
-          getData={getAllFundTransfer}
+          getData={getAllClients}
           paginationDetails={paginationDetails}
           removeSortingForColumnIds={["serial", "actions"]}
         />
       </div>
+      )}
       <UploadCsvDialog
         openOrNot={uploadOpen}
         onCancelClick={onClickUploadClose}
@@ -262,7 +324,7 @@ const FundTransfer = () => {
         onOKClick={deleteClient}
         deleteLoading={deleteLoading}
       />
-      <Loading loading={loading} label="" />
+      <Loading loading={isLoading} label="" />
     </div>
   );
 };

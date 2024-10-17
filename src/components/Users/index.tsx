@@ -194,9 +194,9 @@ const Users = () => {
       cell: (info: any) => {
         return (
           <div>
-            <Button title="View" size={"sm"} variant={"ghost"}>
+            {/* <Button title="View" size={"sm"} variant={"ghost"}>
               <img src={"/table/view.svg"} alt="view" height={16} width={16} />
-            </Button>
+            </Button> */}
             <Button
               title="Edit"
               onClick={() =>
@@ -265,6 +265,7 @@ const Users = () => {
               paginationDetails={data?.data?.data?.pagination_info}
               getData={getAllUsers}
               removeSortingForColumnIds={["serial", "actions", "select"]}
+              loading={isLoading}
             />
           </div>
         )}
