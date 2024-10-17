@@ -10,7 +10,6 @@ import { useDispatch } from "react-redux";
 import Cookies from "js-cookie";
 import { setUserDetails } from "@/redux/Modules/userlogin";
 import { toast } from "sonner";
-import Loading from "../core/CommonComponents/Loading";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { errPopper } from "@/utils/helpers/errorPopper";
 interface loginProps {
@@ -93,7 +92,7 @@ const LoginComponent = () => {
           onSubmit={handleLogin}
         >
           <div className="flex flex-col space-y-1">
-            <Label className="font-normal uppercase text-lg" htmlFor="email">
+            <Label className="font-normal capitalize text-lg" htmlFor="email">
               Email
             </Label>
             <Input
@@ -109,7 +108,7 @@ const LoginComponent = () => {
             )}
           </div>
           <div className="flex flex-col space-y-1">
-            <Label className="font-normal uppercase text-lg" htmlFor="password">
+            <Label className="font-normal capitalize text-lg" htmlFor="password">
               Password
             </Label>
             <Input
@@ -125,6 +124,7 @@ const LoginComponent = () => {
               <p style={{ color: "red" }}>{errors?.password[0]}</p>
             )}
           </div>
+          <div className="flex justify-end">
           <Link
                 to="/forgot-password"
                 activeProps={{
@@ -133,11 +133,12 @@ const LoginComponent = () => {
                 activeOptions={{ exact: true }}
               >
                  <div className="flex flex-col">
-                    <span  className="text-blue-500 hover:text-blue-700">
+                    <span  className="text-blue-500 hover:text-blue-700"  style={{ fontSize: '1.2rem' }}>
                       <sub>Forgot Password?</sub>
                     </span>
                   </div>
               </Link>
+              </div>
           <Button
             type="submit"
             className="w-full flex justify-center items-center"
@@ -150,7 +151,6 @@ const LoginComponent = () => {
           </Button>
         </form>
       </div>
-      {/* <Loading loading={loading} /> */}
     </div>
   );
 };
