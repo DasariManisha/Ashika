@@ -226,7 +226,7 @@ const FundTransfer = () => {
           Import Client
         </Button>
         <Button className="bg-[#e11d48] text-white">select</Button>
-        <SearchFilter searchString={searchString} />
+
         <Button
           className="bg-[#1e3a8a] text-white"
           onClick={() =>
