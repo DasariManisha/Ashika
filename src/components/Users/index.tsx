@@ -38,7 +38,6 @@ const Users = () => {
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const [searchString, setSearchString] = useState(initialSearch);
   const [debouncedSearch, setDebouncedSearch] = useState(searchString);
-  console.log(searchString, "search");
 
   const [pagination, setPagination] = useState({
     pageIndex: pageIndexParam,
@@ -53,14 +52,14 @@ const Users = () => {
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         order_by: pagination.order_by,
-        search: debouncedSearch, // Pass search string to API
+        search: debouncedSearch,
       });
 
       const queryParams: Record<string, any> = {
         current_page: pagination.pageIndex,
         page_size: pagination.pageSize,
         order_by: pagination.order_by || undefined,
-        search: debouncedSearch || undefined, // Include search in URL
+        search: debouncedSearch || undefined,
       };
       router.navigate({
         to: "/users",
@@ -77,8 +76,6 @@ const Users = () => {
       data?.data?.data?.pagination_info?.current_page,
       data?.data?.data?.pagination_info?.page_size
     ) || [];
-
-  console.log(usersData, "usersData");
 
   const getAllUsers = async ({ pageIndex, pageSize, order_by }: any) => {
     setPagination({ pageIndex, pageSize, order_by });
@@ -160,14 +157,11 @@ const Users = () => {
       setSelectedUsers(allUserIds);
     }
   };
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchString(e.target.value);
-  };
 
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(searchString);
-    }, 500); // Adjust the debounce delay as needed
+    }, 500);
 
     return () => {
       clearTimeout(handler);
@@ -244,7 +238,7 @@ const Users = () => {
       <div className="flex justify-end mb-4 gap-3">
         <SearchFilter
           searchString={searchString}
-          handleSearchChange={handleSearchChange}
+          setSearchString={setSearchString}
         />
         {/* <Button
           className="bg-red-600 text-white hover:bg-blue-700"

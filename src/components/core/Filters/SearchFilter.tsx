@@ -1,12 +1,11 @@
 import { Input } from "@/components/ui/input";
+import { IReportsFilters } from "@/lib/interfaces/report";
 import { Search } from "lucide-react";
 
-interface SearchFilterProps {
-  searchString: string;
-  handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
-
-const SearchFilter: React.FC<SearchFilterProps> = ({ searchString, handleSearchChange }) => {
+const SearchFilter: React.FC<IReportsFilters> = ({
+  searchString,
+  setSearchString,
+}) => {
   return (
     <div className="relative">
       <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
@@ -14,7 +13,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({ searchString, handleSearchC
         placeholder="Search Here..."
         value={searchString}
         type="search"
-        onChange={handleSearchChange}
+        onChange={(e) => setSearchString(e.target.value)}
         className="w-30 pl-8 bg-white-500"
       />
     </div>

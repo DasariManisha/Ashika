@@ -25,6 +25,7 @@ export const getAllPaginatedReports = async ({
       page: pageIndex,
       page_size: pageSize,
       order_by: order_by,
+      search_string,
       asset_group,
       asset_type,
       asset_category,

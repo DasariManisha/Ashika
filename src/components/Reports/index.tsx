@@ -14,6 +14,8 @@ import { Checkbox } from "../ui/checkbox";
 import DeleteMultipleReports from "../core/CommonComponents/DeleteMultipleReports";
 import { ReportProps } from "@/lib/interfaces/report";
 import ReportsFilters from "./ReportsFilters";
+import SearchFilter from "../core/Filters/SearchFilter";
+import DateRangeFilter from "../core/Filters/DateRangeFilter";
 
 const Reports: React.FC<ReportProps> = ({
   asset_group,
@@ -28,7 +30,6 @@ const Reports: React.FC<ReportProps> = ({
 
   const pageIndexParam = Number(searchParams.get("current_page")) || 1;
   const pageSizeParam = Number(searchParams.get("page_size")) || 10;
-  const [searchString, setSearchString] = useState("");
   const [selectedReports, setSelectedReports] = useState<number[]>([]);
   const orderBY = searchParams.get("order_by")
     ? searchParams.get("order_by")
@@ -39,16 +40,18 @@ const Reports: React.FC<ReportProps> = ({
     order_by: orderBY,
     search_string: searchParams.get("search_string"),
   });
-
+  const initialSearch = searchParams.get("search_string") || "";
+  const [searchString, setSearchString] = useState(initialSearch);
+  const [debouncedSearch, setDebouncedSearch] = useState(searchString);
   const [del, setDel] = useState(1);
   const { isLoading, isError, error, data, isFetching } = useQuery({
-    queryKey: ["projects", pagination, del],
+    queryKey: ["projects", pagination, del, debouncedSearch],
     queryFn: async () => {
       const response = await getAllPaginatedReports({
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         order_by: pagination.order_by,
-        search_string: searchParams.get("search_string"),
+        search_string: debouncedSearch,
         asset_group,
         asset_type,
         asset_category,
@@ -57,6 +60,7 @@ const Reports: React.FC<ReportProps> = ({
         current_page: +pagination.pageIndex,
         page_size: +pagination.pageSize,
         order_by: pagination.order_by ? pagination.order_by : undefined,
+        search_string: debouncedSearch || undefined,
       };
       router.navigate({
         to:
@@ -176,26 +180,23 @@ const Reports: React.FC<ReportProps> = ({
   console.log(searchString, "searchString");
 
   useEffect(() => {
-    let debounce = setTimeout(() => {
-      getAllPaginatedReports({
-        search_string: searchString,
-        pageIndex: 1,
-        asset_group,
-        asset_type,
-        asset_category,
-      });
-      setDel((prev) => prev + 1);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchString);
     }, 500);
-    return () => clearTimeout(debounce);
-  }, []);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchString]);
 
   return (
     <div className="relative">
       <div className="flex justify-end mb-4 gap-4">
-        <ReportsFilters
+        <SearchFilter
           searchString={searchString}
           setSearchString={setSearchString}
         />
+        <DateRangeFilter dateValue={""} updateDateValues={""} />
         <DeleteMultipleReports
           selectedReports={selectedReports}
           setDel={setDel}
