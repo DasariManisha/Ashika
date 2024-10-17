@@ -147,7 +147,7 @@ const AddUser = () => {
   };
 
   return (
-    <Card className="p-6 max-w-lg mx-auto shadow-md">
+    <Card className="relative p-6 max-w-lg mx-auto shadow-md">
       <h1 className="text-2xl font-bold text-black-600 ml-2">
         {userId ? "Update User" : "Add User"}
       </h1>

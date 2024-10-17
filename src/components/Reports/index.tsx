@@ -254,7 +254,12 @@ const Reports: React.FC<ReportProps> = ({
               columns={[...reportsColumns, ...actionsColumns]}
               paginationDetails={paginationInfo}
               getData={getAllReports}
-              removeSortingForColumnIds={["select", "serial", "actions"]}
+              removeSortingForColumnIds={[
+                "select",
+                "serial",
+                "actions",
+                "asset_category",
+              ]}
             />
           </div>
         )}

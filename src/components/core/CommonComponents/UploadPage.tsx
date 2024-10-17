@@ -1,5 +1,5 @@
 "use client";
-import { UploadCloud, X } from "lucide-react";
+import { Loader2, UploadCloud, X } from "lucide-react";
 import React, { useContext } from "react";
 import {
   Tooltip,
@@ -105,12 +105,17 @@ const FileUpload = ({ accept, type }: fileProps) => {
                     </span>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleRemoveFile(file.fileName)}
-                  className="bg-none border-none cursor-pointer"
-                >
-                  <X className="text-red-500 w-6 h-6" />
-                </button>
+                <div className="flex">
+                  {startUploading && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  <button
+                    onClick={() => handleRemoveFile(file.fileName)}
+                    className="bg-none border-none cursor-pointer"
+                  >
+                    <X className="text-red-500 w-6 h-6" />
+                  </button>
+                </div>
               </div>
             );
           })}
