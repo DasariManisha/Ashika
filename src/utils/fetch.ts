@@ -9,7 +9,7 @@ interface IAPIResponse {
 }
 class FetchService {
   authStatusCodes: number[] = [401, 403];
-  authErrorURLs: string[] = []; //Auth API URL endpoints here
+  authErrorURLs: string[] = ["/","/auth/reset-password","/forgot-password"]; //Auth API URL endpoints here
 
   private _fetchType: string;
   constructor(fetchTypeValue = "json") {

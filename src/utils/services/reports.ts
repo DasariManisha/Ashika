@@ -5,6 +5,8 @@ interface GetAllPaginatedReportPropTypes {
   pageSize: number;
   order_by: any;
   search_string: string | null;
+  // start_date: string | null;
+  // end_date:string | null ;
   asset_group: string;
   asset_type: string;
   asset_category: string;
@@ -15,6 +17,8 @@ export const getAllPaginatedReports = async ({
   pageSize,
   order_by,
   search_string,
+  // start_date,
+  // end_date,
   asset_group,
   asset_type,
   asset_category,
@@ -26,6 +30,8 @@ export const getAllPaginatedReports = async ({
       page_size: pageSize,
       order_by: order_by,
       search_string,
+      // start_date,
+      // end_date,
       asset_group,
       asset_type,
       asset_category,

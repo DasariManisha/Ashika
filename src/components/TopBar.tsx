@@ -24,8 +24,6 @@ function TopBar() {
 
   const profileData = useSelector((state: any) => state.auth.user.user_details);
 
-  console.log(profileData, "profileData");
-
   const currentNavItem = navBarConstants.find((item: titleProps) =>
     pathname.includes(item.path)
   );

@@ -178,7 +178,16 @@ const CombineAdd = ({
               {showYear && <YearSelect />}
               {showMonth && <MonthSelect />}
             </div>
-            {showCategory && <CategorySelect />}
+            {showCategory && (
+              <>
+                <CategorySelect />
+                {errMessages?.asset_category && (
+                  <p className="text-red-500">
+                    {errMessages.asset_category[0]}
+                  </p>
+                )}
+              </>
+            )}
             {showFileUpload && (
               <div>
                 <FileUpload accept="*/*" />

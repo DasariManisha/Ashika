@@ -17,9 +17,11 @@ const columnHelper = createColumnHelper<ResponseDataType>();
 
 export const ReportColumns = [
   columnHelper.accessor("serial", {
+    id: "serial",
     header: () => "S.No",
-    cell: (info) => info.getValue(),
+    cell: (info) => <div className="p-2">{info.getValue()}</div>,
     footer: (info) => info.column.id,
+    size: 20,
   }),
   columnHelper.accessor("title", {
     header: () => "Title",

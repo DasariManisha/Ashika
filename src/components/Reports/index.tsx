@@ -12,10 +12,10 @@ import PreviewFile from "../core/CommonComponents/PreviewFile";
 import DeleteResearchReports from "../core/CommonComponents/DeleteResearchReport";
 import { Checkbox } from "../ui/checkbox";
 import DeleteMultipleReports from "../core/CommonComponents/DeleteMultipleReports";
-import { ReportProps } from "@/lib/interfaces/report";
-import ReportsFilters from "./ReportsFilters";
 import SearchFilter from "../core/Filters/SearchFilter";
+import { ReportProps } from "@/lib/interfaces/report";
 import DateRangeFilter from "../core/Filters/DateRangeFilter";
+import dayjs from "dayjs";
 
 const Reports: React.FC<ReportProps> = ({
   asset_group,
@@ -41,9 +41,15 @@ const Reports: React.FC<ReportProps> = ({
     search_string: searchParams.get("search_string"),
   });
   const initialSearch = searchParams.get("search_string") || "";
+  const startDate = searchParams.get("start_date") || "";
+  const endDate = searchParams.get("end_date") || "";
   const [searchString, setSearchString] = useState(initialSearch);
   const [debouncedSearch, setDebouncedSearch] = useState(searchString);
+  // const [dateValue, setDateValue] = useState<[Date, Date] | null>(
+  //   startDate && endDate ? [new Date(startDate), new Date(endDate)] : null
+  // );
   const [del, setDel] = useState(1);
+
   const { isLoading, isError, error, data, isFetching } = useQuery({
     queryKey: ["projects", pagination, del, debouncedSearch],
     queryFn: async () => {
@@ -52,6 +58,8 @@ const Reports: React.FC<ReportProps> = ({
         pageSize: pagination.pageSize,
         order_by: pagination.order_by,
         search_string: debouncedSearch,
+        // start_date: dateValue && dayjs(dateValue[0]).format("YYYY-MM-DD"),
+        // end_date: dateValue && dayjs(dateValue[1]).format("YYYY-MM-DD"),
         asset_group,
         asset_type,
         asset_category,
@@ -61,6 +69,12 @@ const Reports: React.FC<ReportProps> = ({
         page_size: +pagination.pageSize,
         order_by: pagination.order_by ? pagination.order_by : undefined,
         search_string: debouncedSearch || undefined,
+        // start_date: dateValue
+        //   ? dayjs(dateValue[0]).format("YYYY-MM-DD")
+        //   : "" || undefined,
+        // end_date: dateValue
+        //   ? dayjs(dateValue[1]).format("YYYY-MM-DD")
+        //   : "" || undefined,
       };
       router.navigate({
         to:
@@ -118,6 +132,24 @@ const Reports: React.FC<ReportProps> = ({
     }
   };
 
+  // const onChangeData = (fromDate: string, toDate: string) => {
+  //   console.log(fromDate, "fromdate");
+
+  //   if (fromDate && toDate) {
+  //     setDateValue([new Date(fromDate), new Date(toDate)]);
+  //     // getAllInterviewsList({
+  //     //   start_date: fromDate,
+  //     //   end_date: toDate,
+  //     // });
+  //   } else {
+  //     setDateValue(null);
+  //     // getAllInterviewsList({
+  //     //   start_date: "",
+  //     //   end_date: "",
+  //     // });
+  //   }
+  // };
+
   const ReportsData =
     addSerial(
       data?.data?.data?.records,
@@ -135,11 +167,14 @@ const Reports: React.FC<ReportProps> = ({
         />
       ),
       cell: ({ row }: any) => (
-        <Checkbox
-          checked={selectedReports.includes(row.original.id)}
-          onCheckedChange={() => handleToggleCheckbox(row.original.id)}
-        />
+        <div className="p-2">
+          <Checkbox
+            checked={selectedReports.includes(row.original.id)}
+            onCheckedChange={() => handleToggleCheckbox(row.original.id)}
+          />
+        </div>
       ),
+      width: "20px",
     },
     ...ReportColumns,
   ];
@@ -152,6 +187,7 @@ const Reports: React.FC<ReportProps> = ({
       cell: (info: any) => {
         return (
           <div>
+            <PreviewFile info={info} />
             <Button
               title="edit"
               onClick={() =>
@@ -169,7 +205,7 @@ const Reports: React.FC<ReportProps> = ({
             >
               <img src={"/table/edit.svg"} alt="edit" height={16} width={16} />
             </Button>
-            <PreviewFile info={info} />
+
             <DeleteResearchReports info={info} setDel={setDel} />
           </div>
         );
@@ -177,7 +213,6 @@ const Reports: React.FC<ReportProps> = ({
       footer: (info) => info.column.id,
     }),
   ];
-  console.log(searchString, "searchString");
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -196,7 +231,7 @@ const Reports: React.FC<ReportProps> = ({
           searchString={searchString}
           setSearchString={setSearchString}
         />
-        <DateRangeFilter dateValue={""} updateDateValues={""} />
+        {/* <DateRangeFilter dateValue={dateValue} onChangeData={onChangeData} /> */}
         <DeleteMultipleReports
           selectedReports={selectedReports}
           setDel={setDel}

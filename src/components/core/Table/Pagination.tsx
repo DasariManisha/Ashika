@@ -150,7 +150,7 @@ const Pagination = ({
               value={pageValue}
               onChange={(e) => setPageValue(Number(e.target.value))}
               onKeyDown={onKeyDownInPageChange}
-              className="ml-2 w-[50px] text-center "
+              className="ml-2 w-[70px]"
               placeholder="Page"
             />
           </div>

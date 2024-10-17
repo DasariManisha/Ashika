@@ -265,6 +265,7 @@ const Users = () => {
               paginationDetails={data?.data?.data?.pagination_info}
               getData={getAllUsers}
               removeSortingForColumnIds={["serial", "actions", "select"]}
+              loading={isLoading}
             />
           </div>
         )}

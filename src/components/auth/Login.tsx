@@ -10,7 +10,6 @@ import { useDispatch } from "react-redux";
 import Cookies from "js-cookie";
 import { setUserDetails } from "@/redux/Modules/userlogin";
 import { toast } from "sonner";
-
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { errPopper } from "@/utils/helpers/errorPopper";
 interface loginProps {
@@ -34,7 +33,7 @@ const LoginComponent = () => {
         if (response?.status === 200 || response?.status === 201) {
           toast.success(response?.data?.message);
           const { data } = response?.data;
-          const { access_token } = data;
+          const { access_token, user_details } = data;
           const expirationDate = new Date();
           expirationDate.setTime(expirationDate.getTime() + 300 * 10000);
           Cookies.set("token", access_token, {
@@ -45,7 +44,10 @@ const LoginComponent = () => {
           dispatch(setUserDetails(data));
 
           navigate({
-            to: "/users",
+            to:
+              user_details?.user_type === "admin"
+                ? "/users"
+                : "/research-reports/daily-insights-reports",
           });
         } else if (response?.status === 422) {
           const errData = response?.data?.errData;
@@ -93,7 +95,7 @@ const LoginComponent = () => {
           onSubmit={handleLogin}
         >
           <div className="flex flex-col space-y-1">
-            <Label className="font-normal uppercase text-lg" htmlFor="email">
+            <Label className="font-normal capitalize text-lg" htmlFor="email">
               Email
             </Label>
             <Input
@@ -109,7 +111,10 @@ const LoginComponent = () => {
             )}
           </div>
           <div className="flex flex-col space-y-1">
-            <Label className="font-normal uppercase text-lg" htmlFor="password">
+            <Label
+              className="font-normal capitalize text-lg"
+              htmlFor="password"
+            >
               Password
             </Label>
             <Input
@@ -125,19 +130,24 @@ const LoginComponent = () => {
               <p style={{ color: "red" }}>{errors?.password[0]}</p>
             )}
           </div>
-          <Link
-            to="/forgot-password"
-            activeProps={{
-              className: "bg-blue-900 text-white",
-            }}
-            activeOptions={{ exact: true }}
-          >
-            <div className="flex flex-col">
-              <span className="text-blue-500 hover:text-blue-700">
-                <sub>Forgot Password?</sub>
-              </span>
-            </div>
-          </Link>
+          <div className="flex justify-end">
+            <Link
+              to="/forgot-password"
+              activeProps={{
+                className: "bg-blue-900 text-white",
+              }}
+              activeOptions={{ exact: true }}
+            >
+              <div className="flex flex-col">
+                <span
+                  className="text-blue-500 hover:text-blue-700"
+                  style={{ fontSize: "1.2rem" }}
+                >
+                  <sub>Forgot Password?</sub>
+                </span>
+              </div>
+            </Link>
+          </div>
           <Button
             type="submit"
             className="w-full flex justify-center items-center"
@@ -150,7 +160,6 @@ const LoginComponent = () => {
           </Button>
         </form>
       </div>
-      {/* <Loading loading={loading} /> */}
     </div>
   );
 };
