@@ -181,7 +181,7 @@ const AddUser = () => {
         </div>
         <div>
           <label htmlFor="lastName" className="block text-sm font-medium">
-            Last Name<span className="text-red-500">*</span>
+            Last Name
           </label>
           <Input
             id="lastName"

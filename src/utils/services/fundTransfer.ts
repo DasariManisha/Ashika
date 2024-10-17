@@ -1,12 +1,28 @@
 import { apiPropsForQueryParams } from "@/lib/helpers/prepareQueryParams";
 import { $fetch } from "../fetch";
 
+interface GetAllPaginatedClientsPropTypes {
+  pageIndex: number;
+  pageSize: number;
+  order_by: any;
+  search: string;
+}
 
-export const getAllFundTransferAPI = async (
-  params: Partial<apiPropsForQueryParams>
-) => {
+
+export const getAllPaginatedClients = async ({
+  pageIndex,
+  pageSize,
+  order_by,
+  search,
+}: GetAllPaginatedClientsPropTypes) => {
   try {
-    return await $fetch.get("/fund-transfers/dp-clients", params);
+    const queryParams = {
+      page: pageIndex,
+      limit: pageSize,
+      order_by: order_by,
+      search_string: search
+    };
+    return await $fetch.get("/clients/list", queryParams);
   } catch (err) {
     throw err;
   }
@@ -14,7 +30,7 @@ export const getAllFundTransferAPI = async (
 
 export const deleteClientAPI = async (id: number) => {
   try {
-    return await $fetch.delete(`/fund-transfers/dp-clients/${id}`);
+    return await $fetch.delete(`/clients/${id}`);
   } catch (err) {
     throw err;
   }

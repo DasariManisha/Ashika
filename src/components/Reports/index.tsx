@@ -213,7 +213,6 @@ const Reports: React.FC<ReportProps> = ({
       footer: (info) => info.column.id,
     }),
   ];
-  console.log(searchString, "searchString");
 
   useEffect(() => {
     const handler = setTimeout(() => {

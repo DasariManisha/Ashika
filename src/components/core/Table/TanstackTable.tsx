@@ -176,18 +176,20 @@ const TanStackTable: FC<pageProps> = ({
               ))
             ) : !loading ? (
               <TableRow>
-                <TableCell colSpan={6}>
-                  <img
-                    src="/No-Files.jpg"
-                    alt="No Data"
-                    height={150}
-                    width={250}
-                  />
+                <TableCell colSpan={6} className="p-5 text-center">
+                  <div className="flex justify-center items-center">
+                    <img
+                      src="/table/no-data.svg"
+                      alt="No Data"
+                      height={150}
+                      width={250}
+                    />
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length}>Loading...</TableCell>
+                <TableCell colSpan={columns.length} className="p-5 text-center">Loading...</TableCell>
               </TableRow>
             )}
           </TableBody>
