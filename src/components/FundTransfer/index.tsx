@@ -53,7 +53,6 @@ const FundTransfer = () => {
     order_by: orderBY,
   });
 
-
   const { isLoading, isError, error, data, isFetching } = useQuery({
     queryKey: ["clients", pagination, del, debouncedSearch],
     queryFn: async () => {
@@ -295,18 +294,18 @@ const FundTransfer = () => {
         </Button>
       </div>
       {isError ? (
-          <div>Error: {error.message}</div>
-        ) : (
-      <div className="ml-5 ">
-        <TanStackTable
-          columns={[...fundTransferColumns, ...fundTransferActions]}
-          data={clientsData}
-          loading={false}
-          getData={getAllClients}
-          paginationDetails={paginationDetails}
-          removeSortingForColumnIds={["serial", "actions"]}
-        />
-      </div>
+        <div>Error: {error.message}</div>
+      ) : (
+        <div className="ml-5 ">
+          <TanStackTable
+            columns={[...fundTransferColumns, ...fundTransferActions]}
+            data={clientsData}
+            loading={false}
+            getData={getAllClients}
+            paginationDetails={paginationDetails}
+            removeSortingForColumnIds={["serial", "actions"]}
+          />
+        </div>
       )}
       <UploadCsvDialog
         openOrNot={uploadOpen}
