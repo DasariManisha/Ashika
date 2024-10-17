@@ -89,7 +89,7 @@ function ForgotComponent() {
               Forgot your account’s password? Enter your email address and we’ll
               send you a recovery link.
             </h3>
-            <Label className="font-normal uppercase text-lg" htmlFor="email">
+            <Label className="font-normal capitalize text-lg" htmlFor="email">
               Email
             </Label>
             <Input
