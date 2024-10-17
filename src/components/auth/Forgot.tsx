@@ -8,6 +8,7 @@ import Cookies from "js-cookie";
 import { errPopper } from "@/utils/helpers/errorPopper";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 interface loginProps {
   email: string;
 }
@@ -15,6 +16,7 @@ function ForgotComponent() {
   const [loading, setLoading] = useState(false);
   const [forgotDetails, setForgotDetails] = useState({ email: "" });
   const [errors, setErrors] = useState<any>({});
+  const navigate = useNavigate();
   const { mutate, isError, error } = useMutation({
     mutationFn: async (forgotDetails: loginProps) => {
       setLoading(true);
@@ -23,17 +25,17 @@ function ForgotComponent() {
         if (response?.status === 200 || response?.status === 201) {
           toast.success(response?.data?.message);
           const { data } = response?.data;
-        // //   const { access_token } = data;
-        // //   const expirationDate = new Date();
-        // //   expirationDate.setTime(expirationDate.getTime() + 30 * 10000);
-        // //   Cookies.set("token", access_token, {
-        // //     priority: "High",
-        // //     expires: expirationDate,
-        // //   });
-        //   // dispatch(setUserDetails(data));
-        //   // navigate({
-        //   //   to: "/users",
-        //   // });
+          // //   const { access_token } = data;
+          // //   const expirationDate = new Date();
+          // //   expirationDate.setTime(expirationDate.getTime() + 30 * 10000);
+          // //   Cookies.set("token", access_token, {
+          // //     priority: "High",
+          // //     expires: expirationDate,
+          // //   });
+          //   // dispatch(setUserDetails(data));
+          //   // navigate({
+          //   //   to: "/users",
+          //   // });
         } else if (response?.status === 422) {
           const errData = response?.data?.errData;
           setErrors(errData);
@@ -54,6 +56,12 @@ function ForgotComponent() {
     setErrors([]);
     setLoading(true);
     mutate(forgotDetails);
+  };
+
+  const handleBack = async () => {
+    navigate({
+      to: "/",
+    });
   };
 
   return (
@@ -77,6 +85,10 @@ function ForgotComponent() {
         </div>
         <form className="w-full" onSubmit={handleSubmit}>
           <div className="flex flex-col space-y-1 w-full">
+            <h3 className="mb-2">
+              Forgot your account’s password? Enter your email address and we’ll
+              send you a recovery link.
+            </h3>
             <Label className="font-normal uppercase text-lg" htmlFor="email">
               Email
             </Label>
@@ -92,16 +104,27 @@ function ForgotComponent() {
               <p style={{ color: "red" }}>{errors?.email[0]}</p>
             )}
           </div>
-          <Button
-            type="submit"
-            className="w-full flex justify-center items-center"
-          >
-            {loading ? (
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-            ) : (
-              "Submit"
-            )}
-          </Button>
+          <div className="mt-4">
+            <Button
+              type="submit"
+              className="w-full flex justify-center items-center"
+            >
+              {loading ? (
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              ) : (
+                "Send recovery email"
+              )}
+            </Button>
+          </div>
+          <div className="mt-4">
+            <Button
+              type="button"
+              onClick={handleBack}
+              className="w-full flex justify-center items-center"
+            >
+              Back
+            </Button>
+          </div>
         </form>
       </div>
       {/* <Loading loading={loading} /> */}

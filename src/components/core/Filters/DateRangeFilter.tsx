@@ -7,9 +7,10 @@ const DateRangeFilter = ({ dateValue, updateDateValues }: any) => {
       editable={false}
       placeholder={"Select Date"}
       ranges={predefinedRanges}
-      placement="autoVertical"
+      placement="bottomEnd"
       value={dateValue}
       onChange={updateDateValues}
+      showHeader={false}
     />
   );
 };
