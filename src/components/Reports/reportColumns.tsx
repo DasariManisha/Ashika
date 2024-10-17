@@ -1,9 +1,6 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import dayjs from "dayjs";
 
-import PreviewFile from "../core/CommonComponents/PreviewFile";
-import DeleteResearchReports from "../core/CommonComponents/DeleteResearchReport";
-
 export interface ResponseDataType {
   id: number;
   title: string;
@@ -18,7 +15,7 @@ export interface ResponseDataType {
 
 const columnHelper = createColumnHelper<ResponseDataType>();
 
-export const testColumns = [
+export const ReportColumns = [
   columnHelper.accessor("serial", {
     header: () => "S.No",
     cell: (info) => info.getValue(),
@@ -38,16 +35,4 @@ export const testColumns = [
     },
     footer: (info) => info.column.id,
   }),
-  // columnHelper.accessor("actions", {
-  //   header: () => "Actions",
-  //   cell: (info: any) => {
-  //     return (
-  //       <div>
-  //         <PreviewFile info={info} />
-  //         <DeleteResearchReports info={info} getAllReports={getAllReports} />
-  //       </div>
-  //     );
-  //   },
-  //   footer: (info) => info.column.id,
-  // }),
 ];

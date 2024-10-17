@@ -10,7 +10,7 @@ import { useDispatch } from "react-redux";
 import Cookies from "js-cookie";
 import { setUserDetails } from "@/redux/Modules/userlogin";
 import { toast } from "sonner";
-import Loading from "../core/CommonComponents/Loading";
+
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { errPopper } from "@/utils/helpers/errorPopper";
 interface loginProps {
@@ -126,18 +126,18 @@ const LoginComponent = () => {
             )}
           </div>
           <Link
-                to="/forgot-password"
-                activeProps={{
-                  className: "bg-blue-900 text-white",
-                }}
-                activeOptions={{ exact: true }}
-              >
-                 <div className="flex flex-col">
-                    <span  className="text-blue-500 hover:text-blue-700">
-                      <sub>Forgot Password?</sub>
-                    </span>
-                  </div>
-              </Link>
+            to="/forgot-password"
+            activeProps={{
+              className: "bg-blue-900 text-white",
+            }}
+            activeOptions={{ exact: true }}
+          >
+            <div className="flex flex-col">
+              <span className="text-blue-500 hover:text-blue-700">
+                <sub>Forgot Password?</sub>
+              </span>
+            </div>
+          </Link>
           <Button
             type="submit"
             className="w-full flex justify-center items-center"

@@ -4,6 +4,7 @@ interface GetAllPaginatedReportPropTypes {
   pageIndex: number;
   pageSize: number;
   order_by: any;
+  search_string: string | null;
   asset_group: string;
   asset_type: string;
   asset_category: string;
@@ -13,16 +14,18 @@ export const getAllPaginatedReports = async ({
   pageIndex,
   pageSize,
   order_by,
+  search_string,
   asset_group,
   asset_type,
   asset_category,
-}: GetAllPaginatedReportPropTypes) => {
+}: Partial<GetAllPaginatedReportPropTypes>) => {
   try {
     // return await $fetch.get(`reports?page=${pageIndex}&limit=${pageSize}&report_group=${reportGroup}&report_type=${reportType}&category_type=${categoryType}`)
     const queryParams = {
       page: pageIndex,
       page_size: pageSize,
       order_by: order_by,
+      search_string,
       asset_group,
       asset_type,
       asset_category,
@@ -81,3 +84,11 @@ export const getSingleReportAPI = async (reportId: string | undefined,) => {
      throw err;
    }
  };
+
+ export const multipleDeleteReportsAPI = async (payload:any) => {
+  try {
+      return await $fetch.delete(`/assets/delete-multiple/new`, payload);
+  } catch (err) {
+      throw err
+  }
+}

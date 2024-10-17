@@ -1,16 +1,21 @@
 import TanStackTable from "@/components/core/Table/TanstackTable";
 import { useQuery } from "@tanstack/react-query";
 import { PaginationState } from "@tanstack/react-table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Loading from "../core/Loading";
 import { Button } from "../ui/button";
 import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
-import { deleteUsersAPI, getAllPaginatedUsers, multipleDeleteUsersAPI } from "@/utils/services/users";
-import { userColumns as baseUserColumns } from "./UserColumns";
+import {
+  deleteUsersAPI,
+  getAllPaginatedUsers,
+  multipleDeleteUsersAPI,
+} from "@/utils/services/users";
+import { userColumns } from "./UserColumns";
 import { addSerial } from "@/lib/helpers/addSerial";
 import { toast } from "sonner";
 import DeleteDialog from "../core/deleteDialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import SearchFilter from "../core/Filters/SearchFilter";
 
 const Users = () => {
   const navigate = useNavigate();
@@ -23,6 +28,7 @@ const Users = () => {
   const orderBY = searchParams.get("order_by")
     ? searchParams.get("order_by")
     : "";
+  const initialSearch = searchParams.get("search") || "";
 
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -30,26 +36,30 @@ const Users = () => {
   const [deleteId, setDeleteId] = useState<any>();
   const [del, setDel] = useState(1);
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
+  const [searchString, setSearchString] = useState(initialSearch);
+  const [debouncedSearch, setDebouncedSearch] = useState(searchString);
 
-  const [pagination, setPagination] = useState<PaginationState>({
+  const [pagination, setPagination] = useState({
     pageIndex: pageIndexParam,
     pageSize: pageSizeParam,
     order_by: orderBY,
   });
 
   const { isLoading, isError, error, data, isFetching } = useQuery({
-    queryKey: ["projects", pagination, del],
+    queryKey: ["users", pagination, del, debouncedSearch],
     queryFn: async () => {
       const response = await getAllPaginatedUsers({
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         order_by: pagination.order_by,
+        search: debouncedSearch,
       });
 
-      const queryParams = {
-        current_page: +pagination.pageIndex,
-        page_size: +pagination.pageSize,
-        order_by: pagination.order_by ? pagination.order_by : undefined,
+      const queryParams: Record<string, any> = {
+        current_page: pagination.pageIndex,
+        page_size: pagination.pageSize,
+        order_by: pagination.order_by || undefined,
+        search: debouncedSearch || undefined,
       };
       router.navigate({
         to: "/users",
@@ -77,11 +87,6 @@ const Users = () => {
       const response = await deleteUsersAPI(deleteId);
       if (response?.status === 200 || response?.status === 201) {
         toast.success(response?.data?.message || "User Deleted Successfully");
-        getAllPaginatedUsers({
-          pageIndex: pagination.pageIndex,
-          pageSize: pagination.pageSize,
-          order_by: pagination.order_by,
-        });
         setDel((prev) => prev + 1);
         onClickClose();
       }
@@ -97,16 +102,11 @@ const Users = () => {
     try {
       setDeleteLoading(true);
       let payload = {
-        ids: selectedUsers
-      }
+        ids: selectedUsers,
+      };
       const response = await multipleDeleteUsersAPI(payload);
       if (response?.status === 200 || response?.status === 201) {
         toast.success(response?.data?.message || "Users Deleted Successfully");
-        getAllPaginatedUsers({
-          pageIndex: pagination.pageIndex,
-          pageSize: pagination.pageSize,
-          order_by: pagination.order_by,
-        });
         setDel((prev) => prev + 1);
         onClickClose();
       }
@@ -158,24 +158,34 @@ const Users = () => {
     }
   };
 
-  const userColumns = [
-    {
-      id: "select",
-      header: ({ table }: any) => (
-        <Checkbox
-          checked={selectedUsers.length === usersData.length}
-          onCheckedChange={handleToggleSelectAll}
-        />
-      ),
-      cell: ({ row }: any) => (
-        <Checkbox
-          checked={selectedUsers.includes(row.original.id)}
-          onCheckedChange={() => handleToggleCheckbox(row.original.id)}
-        />
-      ),
-    },
-    ...baseUserColumns,
-  ];
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchString);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchString]);
+
+  // const userColumns = [
+  //   {
+  //     id: "select",
+  //     header: ({ table }: any) => (
+  //       <Checkbox
+  //         checked={selectedUsers.length === usersData.length}
+  //         onCheckedChange={handleToggleSelectAll}
+  //       />
+  //     ),
+  //     cell: ({ row }: any) => (
+  //       <Checkbox
+  //         checked={selectedUsers.includes(row.original.id)}
+  //         onCheckedChange={() => handleToggleCheckbox(row.original.id)}
+  //       />
+  //     ),
+  //   },
+  //   ...baseUserColumns,
+  // ];
 
   const userActions = [
     {
@@ -184,9 +194,9 @@ const Users = () => {
       cell: (info: any) => {
         return (
           <div>
-            <Button title="View" size={"sm"} variant={"ghost"}>
+            {/* <Button title="View" size={"sm"} variant={"ghost"}>
               <img src={"/table/view.svg"} alt="view" height={16} width={16} />
-            </Button>
+            </Button> */}
             <Button
               title="Edit"
               onClick={() =>
@@ -225,14 +235,18 @@ const Users = () => {
 
   return (
     <div className="relative">
-      <div className="flex justify-end mb-4">
-        <Button
+      <div className="flex justify-end mb-4 gap-3">
+        <SearchFilter
+          searchString={searchString}
+          setSearchString={setSearchString}
+        />
+        {/* <Button
           className="bg-red-600 text-white hover:bg-blue-700"
           onClick={onClickDeleteOpen}
           disabled={!selectedUsers?.length}
         >
           Delete Users
-        </Button>
+        </Button> */}
         <Button
           className="bg-blue-600 text-white hover:bg-blue-700"
           onClick={handleNavigation}
@@ -255,21 +269,21 @@ const Users = () => {
           </div>
         )}
         {deleteOpen == true ? (
-        <DeleteDialog
-          openOrNot={deleteOpen}
-          label="Are you sure you want to Delete this users?"
-          onCancelClick={onClickDeleteClose}
-          onOKClick={deleteUsers}
-          deleteLoading={deleteLoading}
-        />
+          <DeleteDialog
+            openOrNot={deleteOpen}
+            label="Are you sure you want to Delete this users?"
+            onCancelClick={onClickDeleteClose}
+            onOKClick={deleteUsers}
+            deleteLoading={deleteLoading}
+          />
         ) : (
           <DeleteDialog
-          openOrNot={open}
-          label="Are you sure you want to Delete this user?"
-          onCancelClick={onClickClose }
-          onOKClick={deleteClient}
-          deleteLoading={deleteLoading}
-        />
+            openOrNot={open}
+            label="Are you sure you want to Delete this user?"
+            onCancelClick={onClickClose}
+            onOKClick={deleteClient}
+            deleteLoading={deleteLoading}
+          />
         )}
         <Loading loading={isLoading || isFetching} />
       </div>

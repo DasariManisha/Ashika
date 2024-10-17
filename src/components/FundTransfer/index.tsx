@@ -16,10 +16,10 @@ import {
   importClientAPI,
 } from "@/utils/services/fundTransfer";
 import DeleteDialog from "../core/deleteDialog";
-import Loading from "../core/CommonComponents/Loading";
 import UploadCsvDialog from "../core/CommonComponents/UploadCsvDialog";
 import SearchFilter from "../core/Filters/SearchFilter";
 import { useQuery } from "@tanstack/react-query";
+import Loading from "../core/Loading";
 
 const FundTransfer = () => {
   const navigate = useNavigate();

@@ -37,7 +37,7 @@ import { fileDetail } from "./upload";
     setSelectedFiles: Dispatch<SetStateAction<fileDetail[]>>
     preview : string;
     setPreview: Dispatch<SetStateAction<string>>;
-
+    clearStates: () => void
   }
 
   export interface reportsDataProps {

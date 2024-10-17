@@ -1,20 +1,22 @@
 import TanStackTable from "@/components/core/Table/TanstackTable";
 import { getAllPaginatedReports } from "@/utils/services/reports";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { PaginationState, createColumnHelper } from "@tanstack/react-table";
-import { useState } from "react";
-import { ResponseDataType, testColumns } from "./testColumns";
+import { createColumnHelper } from "@tanstack/react-table";
+import { useEffect, useState } from "react";
+import { ReportColumns, ResponseDataType } from "./reportColumns";
 import Loading from "../core/Loading";
 import { Button } from "../ui/button";
 import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
 import { addSerial } from "@/lib/helpers/addSerial";
 import PreviewFile from "../core/CommonComponents/PreviewFile";
 import DeleteResearchReports from "../core/CommonComponents/DeleteResearchReport";
-interface ReportProps {
-  asset_group: string;
-  asset_type: string;
-  asset_category: string;
-}
+import { Checkbox } from "../ui/checkbox";
+import DeleteMultipleReports from "../core/CommonComponents/DeleteMultipleReports";
+import { ReportProps } from "@/lib/interfaces/report";
+import ReportsFilters from "./ReportsFilters";
+import SearchFilter from "../core/Filters/SearchFilter";
+import DateRangeFilter from "../core/Filters/DateRangeFilter";
+
 const Reports: React.FC<ReportProps> = ({
   asset_group,
   asset_type,
@@ -25,8 +27,10 @@ const Reports: React.FC<ReportProps> = ({
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchParams = new URLSearchParams(location.search);
+
   const pageIndexParam = Number(searchParams.get("current_page")) || 1;
   const pageSizeParam = Number(searchParams.get("page_size")) || 10;
+  const [selectedReports, setSelectedReports] = useState<number[]>([]);
   const orderBY = searchParams.get("order_by")
     ? searchParams.get("order_by")
     : "";
@@ -34,16 +38,20 @@ const Reports: React.FC<ReportProps> = ({
     pageIndex: pageIndexParam,
     pageSize: pageSizeParam,
     order_by: orderBY,
+    search_string: searchParams.get("search_string"),
   });
-
+  const initialSearch = searchParams.get("search_string") || "";
+  const [searchString, setSearchString] = useState(initialSearch);
+  const [debouncedSearch, setDebouncedSearch] = useState(searchString);
   const [del, setDel] = useState(1);
   const { isLoading, isError, error, data, isFetching } = useQuery({
-    queryKey: ["projects", pagination, del],
+    queryKey: ["projects", pagination, del, debouncedSearch],
     queryFn: async () => {
       const response = await getAllPaginatedReports({
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         order_by: pagination.order_by,
+        search_string: debouncedSearch,
         asset_group,
         asset_type,
         asset_category,
@@ -52,6 +60,7 @@ const Reports: React.FC<ReportProps> = ({
         current_page: +pagination.pageIndex,
         page_size: +pagination.pageSize,
         order_by: pagination.order_by ? pagination.order_by : undefined,
+        search_string: debouncedSearch || undefined,
       };
       router.navigate({
         to:
@@ -64,12 +73,15 @@ const Reports: React.FC<ReportProps> = ({
       });
       return response;
     },
-    // staleTime: 5000,
   });
 
-  const getAllReports = async ({ pageIndex, pageSize, order_by }: any) => {
-    setPagination({ pageIndex, pageSize, order_by });
-    // queryClient.invalidateQueries(["projects", { pageIndex, pageSize }]);
+  const getAllReports = async ({
+    pageIndex,
+    pageSize,
+    order_by,
+    search_string,
+  }: any) => {
+    setPagination({ pageIndex, pageSize, order_by, search_string });
   };
   const paginationInfo = data?.data?.data?.pagination_info;
   const records = data?.data?.data?.records;
@@ -88,7 +100,52 @@ const Reports: React.FC<ReportProps> = ({
             : `/${asset_group}/${asset_type}/add`,
     });
   };
+
+  const handleToggleCheckbox = (reportId: number) => {
+    setSelectedReports((prevSelected) =>
+      prevSelected.includes(reportId)
+        ? prevSelected.filter((id) => id !== reportId)
+        : [...prevSelected, reportId]
+    );
+  };
+
+  const handleToggleSelectAll = () => {
+    if (selectedReports.length === ReportsData.length) {
+      setSelectedReports([]);
+    } else {
+      const allReportsIds = ReportsData.map((report: any) => report.id);
+      setSelectedReports(allReportsIds);
+    }
+  };
+
+  const ReportsData =
+    addSerial(
+      data?.data?.data?.records,
+      data?.data?.data?.pagination_info?.current_page,
+      data?.data?.data?.pagination_info?.page_size
+    ) || [];
+
+  const reportsColumns = [
+    {
+      id: "select",
+      header: ({ table }: any) => (
+        <Checkbox
+          checked={selectedReports.length === ReportsData.length}
+          onCheckedChange={handleToggleSelectAll}
+        />
+      ),
+      cell: ({ row }: any) => (
+        <Checkbox
+          checked={selectedReports.includes(row.original.id)}
+          onCheckedChange={() => handleToggleCheckbox(row.original.id)}
+        />
+      ),
+    },
+    ...ReportColumns,
+  ];
+
   const columnHelper = createColumnHelper<ResponseDataType>();
+
   const actionsColumns = [
     columnHelper.accessor("actions", {
       header: () => "Actions",
@@ -113,35 +170,38 @@ const Reports: React.FC<ReportProps> = ({
               <img src={"/table/edit.svg"} alt="edit" height={16} width={16} />
             </Button>
             <PreviewFile info={info} />
-            <DeleteResearchReports
-              info={info}
-              getAllReports={
-                () =>
-                  getAllPaginatedReports({
-                    pageIndex: pagination.pageIndex,
-                    pageSize: pagination.pageSize,
-                    order_by: pagination.order_by,
-                    asset_group,
-                    asset_type,
-                    asset_category,
-                  })
-
-                // getAllReports({
-                //   pageIndex: pagination.pageIndex,
-                //   pageSize: pagination.pageSize,
-                // })
-              }
-              setDel={setDel}
-            />
+            <DeleteResearchReports info={info} setDel={setDel} />
           </div>
         );
       },
       footer: (info) => info.column.id,
     }),
   ];
+  console.log(searchString, "searchString");
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchString);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchString]);
+
   return (
     <div className="relative">
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end mb-4 gap-4">
+        <SearchFilter
+          searchString={searchString}
+          setSearchString={setSearchString}
+        />
+        <DateRangeFilter dateValue={""} updateDateValues={""} />
+        <DeleteMultipleReports
+          selectedReports={selectedReports}
+          setDel={setDel}
+          setSelectedReports={setSelectedReports}
+        />
         <Button
           className="bg-blue-600 text-white hover:bg-blue-700"
           onClick={handleNavigation}
@@ -156,10 +216,10 @@ const Reports: React.FC<ReportProps> = ({
           <div>
             <TanStackTable
               data={recordsWithSerials}
-              columns={[...testColumns, ...actionsColumns]}
+              columns={[...reportsColumns, ...actionsColumns]}
               paginationDetails={paginationInfo}
               getData={getAllReports}
-              removeSortingForColumnIds={["serial", "actions"]}
+              removeSortingForColumnIds={["select", "serial", "actions"]}
             />
           </div>
         )}

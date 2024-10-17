@@ -7,20 +7,9 @@ import { toast } from "sonner";
 import React, { Dispatch, SetStateAction, useState } from "react";
 interface deleteProps {
   info: any;
-  getAllReports: ({
-    pageIndex,
-    pageSize,
-    // asset_group,
-    // asset_type,
-    // asset_category,
-  }: any) => void;
   setDel: Dispatch<SetStateAction<number>>;
 }
-const DeleteResearchReports = ({
-  info,
-  getAllReports,
-  setDel,
-}: deleteProps) => {
+const DeleteResearchReports = ({ info, setDel }: deleteProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [reportId, setReportId] = useState(0);
   const queryClient = useQueryClient();
