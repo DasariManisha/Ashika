@@ -13,7 +13,6 @@ import DeleteResearchReports from "../core/CommonComponents/DeleteResearchReport
 import { Checkbox } from "../ui/checkbox";
 import DeleteMultipleReports from "../core/CommonComponents/DeleteMultipleReports";
 import { ReportProps } from "@/lib/interfaces/report";
-import ReportsFilters from "./ReportsFilters";
 import SearchFilter from "../core/Filters/SearchFilter";
 import DateRangeFilter from "../core/Filters/DateRangeFilter";
 
