@@ -71,7 +71,8 @@ const TanStackTable: FC<pageProps> = ({
 
   const getWidth = (id: string) => {
     const widthObj = columns.find((col) => col.id === id);
-    return widthObj ? widthObj?.width || "100px" : "100px";
+    console.log(widthObj, columns);
+    return widthObj ? widthObj?.width || widthObj?.size || "100px" : "100px";
   };
 
   const sortAndGetData = (header: any) => {
